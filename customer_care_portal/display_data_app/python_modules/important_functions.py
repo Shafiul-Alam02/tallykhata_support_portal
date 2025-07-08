@@ -120,7 +120,7 @@ def tp_wallet_unblock_status(tp_wallet_numbers):
 
 
 def tp_wallet_unblock_api(wallet, token):
-    url = "http://10.10.67.10:7070/nobopay-api-gateway/api/portal/wallet/unblock"
+    url = ""
     headers = CaseInsensitiveDict()
     headers["Content-Type"] = "application/json"
     headers["Authorization"] = "Bearer " + token
@@ -149,9 +149,9 @@ def tp_wallet_unblock_api(wallet, token):
 def sms_sending_api_mobireach(wallet, message):
     numbers_sms = "88"+wallet
     #message = 'Hello'
-    username = 'progoti_2'
-    password = 'Windows@123'
-    url = "https://api.mobireach.com.bd/SendTextMessage?Username=" + username + "&Password=" + password + "&From=TallyKhata&To=" + numbers_sms + '&Message=' + message
+    username = ''
+    password = ''
+    url = ""
     print(url)
     headers = CaseInsensitiveDict()
     headers["Accept"] = "application/json"
@@ -165,11 +165,11 @@ def sms_sending_api_mobireach(wallet, message):
 def sms_sending_api_banglalink(wallet, message, ref_no):
     wallet = "88" + wallet
 
-    url = "https://corpsms.banglalink.net/bl/api/v1/smsapigw/"
+    url = ""
 
     payload = json.dumps({
-        "username": "ProgotiSL",
-        "password": "p8U7RdN%Gi",
+        "username": "",
+        "password": "",
         "apicode": "5",
         "msisdn": [
             wallet
@@ -186,7 +186,7 @@ def sms_sending_api_banglalink(wallet, message, ref_no):
     })
     headers = {
         'Content-Type': 'application/json',
-        'Cookie': 'TS01704ea3=01e808c473c46664a991dfacaf539ca8b2e07b99e331eeb480a4f84847e562919a9a11eab746b2b709cc6506de9c975db413d5f967'
+        'Cookie': ''
     }
 
     response = requests.request("POST", url, headers=headers, data=payload)
@@ -200,7 +200,7 @@ def get_np_portal_token(username, password):
     username = '"' + username + '",'
     password = '"' + password + '"'
 
-    url = "https://nportal.nobopay.com/api/portal/login"
+    url = ""
 
     headers = CaseInsensitiveDict()
     headers["Content-Type"] = "application/json"
@@ -221,7 +221,7 @@ def get_np_portal_token(username, password):
     return token
 
 def beftn_reconciliation_report_api(start_date, end_date):
-    url = "http://10.10.66.3:8280/services/wso2.np.bank.integration.City.OtherBankStatus"
+    url = ""
 
     headers = CaseInsensitiveDict()
     headers["Content-Type"] = "application/json"
@@ -265,7 +265,7 @@ def beftn_recon_status_meaning(status, txn_Flag_CBS, txn_return_flag_CBS):
 
 def nagad_credit_collection_status_check_api(payment_reference_id):
 
-    url = "https://api.mynagad.com/api/dfs/verify/payment/"+payment_reference_id
+    url = ""+payment_reference_id
     print(url)
     headers = CaseInsensitiveDict()
     headers["Accept"] = "application/json"
@@ -306,20 +306,9 @@ def nagad_credit_collection_tp_decision(tp_status):
 def rocket_status_check_api(transaction_id, client_ip):
     print("Rocket check status API function reached. Calling rocket API. Transaction ID: ", transaction_id, " Client IP: ", client_ip)
 
-    url = "https://ecom.dutchbanglabank.com/ecomws/dbblecomtxn"
+    url = ""
 
-    payload = f"""<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ecom="http://ecom.dbbl/">
-                    <soapenv:Header/>
-                    <soapenv:Body>
-                      <ecom:getresultfield>
-                         <userid>000599992430000</userid>
-                         <pwd>2d551ba722d665d8678967af341c32e26f0b15a0</pwd>
-                         <transid>{transaction_id}</transid>
-                         <clientip>{client_ip}</clientip>
-                         <billinginfo>6</billinginfo>
-                      </ecom:getresultfield>
-                    </soapenv:Body>
-                    </soapenv:Envelope>"""
+    payload = f""
 
 
     # headers
@@ -401,7 +390,7 @@ def beftn_status_check_api(start_date, bank_txn_id):
     print(start_date)
     start_date = '"'+start_date+'"'
     bank_txn_id = '"' + bank_txn_id + '"'
-    url = "http://10.10.66.3:8280/services/wso2.np.bank.integration.City.OtherBankStatus"
+    url = ""
 
     headers = CaseInsensitiveDict()
     headers["Content-Type"] = "application/json"
@@ -452,12 +441,12 @@ def beftn_status_check_api(start_date, bank_txn_id):
 def nagad_cash_out_status_check(extra_info, db_request):
     queryset = db_request
     x = [(
-         'https://api.mynagad.com/api/secure-handshake/dfs/disbursement | Body/Parameter: {"merchantAggregatorId":"660217024214684","requestDateTime":"20230228191134","random":"8308791653568148194","signature":"I7LpmutU5A2Z+JUdH1MVRme8xVDBl2YfPF8AdWyZv/WUCtbw9w7tKpRng44CGXGBUPY+NHq4SOAGX9foVYwh+ndTHd8Jzi8JWtAzb4sx37GXQSpCbOgCdcs0An259oNc/U3HkFcTaMcR1HdWD9dvs7i4jQUN0sRe7rb2Spz7ExS6f2NHN2CqbH/U8s3+ANQtTbzniKTteXKCuHxEOrR/y/Dj8Sr4MXS2L7kJOWICmKaJVxeHpOyYd4HbFYC3NzPl2/3c377rmYrc/XxvALD9rxKVAm8puIGdasZnBlqyLre9UxEDZlYfn1EOTPvUY1PTC7OIEx2stc5qaIszRi3YxQ=="} | Header: ,X-KM-Client-Type: PC_WEB,X-KM-Api-Version: v-0.2.0,X-KM-MC-Id: 689044455305399,X-KM-MA-Id: 660217024214684',)]
+         '91134","random":""} | Header: ,X-KM-Client-Type: PC_WEB,X-KM-Api-Version: v-0.2.0,X-KM-MC-Id: 689044455305399,X-KM-MA-Id: 660217024214684',)]
     x = x[0][0]
     print(x, "\n")
 
-    delimiter1 = "{"
-    delimiter2 = "}"
+    delimiter1 = ""
+    delimiter2 = ""
 
     idx1 = x.index(delimiter1)
     idx2 = x.index(delimiter2)
@@ -470,15 +459,10 @@ def nagad_cash_out_status_check(extra_info, db_request):
     # API Get Key
     payload = "{" + res + "}"
 
-    url = "https://api.mynagad.com/api/secure-handshake/dfs/disbursement"
+    url = ""
 
     headers = {
-        'X-KM-Client-Type': 'PC_WEB',
-        'X-KM-Api-Version': 'v-0.2.0',
-        'X-KM-MC-Id': '689044455305399',
-        'X-KM-MA-Id': '660217024214684',
-        'Content-Type': 'application/json',
-        'Cookie': 'WMONID=g-F4QtRPnoj'
+
     }
 
     response = requests.request("POST", url, headers=headers, data=payload)
@@ -499,16 +483,11 @@ def nagad_cash_out_status_check(extra_info, db_request):
     rechargeId = extra_info['rechargeId']
     print(rechargeId)
 
-    url = "https://api.mynagad.com/api/dfs/recharge/status?requestDateTime="+requestDateTime+"&referenceNo="+referenceNo+"&rechargeId="+rechargeId
+    url = ""+requestDateTime+"&referenceNo="+referenceNo+"&rechargeId="+rechargeId
     print("Url is: ",url)
     payload = {}
     headers = {
-        'X-KM-Client-Type': 'PC_WEB',
-        'X-KM-Api-Version': 'v-0.2.0',
-        'X-KM-Api-Key': km_api_key,
-        'X-KM-MC-Id': '689044455305399',
-        'X-KM-MA-Id': '660217024214684',
-        'Cookie': 'WMONID=g-F4QtRPnoj'
+
     }
 
     response = requests.request("GET", url, headers=headers, data=payload)
@@ -518,7 +497,7 @@ def nagad_cash_out_status_check(extra_info, db_request):
 
 def cashback_disbursement_api(wallet,amount, disbursement_note):
     print('Reached cashback disbursement API for : ', wallet, " ", amount)
-    url = "http://10.10.67.10:7010/api/transaction/cash-back/"
+    url = ""
 
     payload = json.dumps({
         "amount": f"{amount}",
@@ -991,7 +970,7 @@ def convert_to_download_link(view_url):
     file_id = view_url.split('/d/')[1].split('/')[0]
 
     # Construct the download URL
-    download_url = f"https://drive.google.com/uc?export=download&id={file_id}"
+    download_url = f""
 
     return download_url
 
@@ -1008,7 +987,7 @@ def download_and_convert_to_base64(service_account_file, file_id):
         str: The Base64-encoded content of the downloaded file.
     """
     # Scopes needed to access Google Drive
-    SCOPES = ['https://www.googleapis.com/auth/drive.readonly']
+    SCOPES = ['']
 
     # Authenticate and create the service
     credentials = service_account.Credentials.from_service_account_file(
