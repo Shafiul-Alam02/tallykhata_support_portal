@@ -19,7 +19,7 @@ def beftn_status_check_api():
     #print(start_date)
     start_date = '"'+start_date+'"'
     end_date = '"' + end_date + '"'
-    url = "http://10.10.67.3:8280/services/wso2.np.bank.integration.City.OtherBankStatus"
+    url = ""
 
     headers = CaseInsensitiveDict()
     headers["Content-Type"] = "application/json"
@@ -169,8 +169,8 @@ def connect_to_pgsql(database, query):
         print('Establishing Connection to Live Customer Support PostGres portal: ')
         host = "localhost"
         db_name = database
-        user = "psl_portal"
-        password = "Tech@pr0g0t12020"
+        user = ""
+        password = ""
         port = '5432'
     else:
         print('Establishing Connection to Test Customer Support PostGres Database: ')

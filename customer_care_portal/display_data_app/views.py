@@ -2685,7 +2685,7 @@ def sqr_data_download(request):
                                'UPMS username or Password is incorrect. Otherwise please contact Product Engineering')
                 return redirect('/sqr_data_download')
 
-            sheet_id = '1BPx7_7WESwavkMFhiBQb17xlYzeZRreoAodpjD6AXJk'
+            sheet_id = ''
             data = google_sheet_func.get_sheet_data(sheet_id)
             print(data)
             df = pd.DataFrame(data[1:], columns=data[0])
@@ -2808,7 +2808,7 @@ def sqr_data_download(request):
             add_sheet_result, paste_data_result = google_sheet_func.sheet_update(
                 list_of_lists,
                 sheet_name=sheet_name,
-                sheet_id='1BPx7_7WESwavkMFhiBQb17xlYzeZRreoAodpjD6AXJk'
+                sheet_id=''
             )
 
             messages.info(request, f'Add sheet result: {add_sheet_result}\n Paste data result: {paste_data_result}')
