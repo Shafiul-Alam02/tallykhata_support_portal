@@ -30,7 +30,7 @@ SECRET_KEY = ''
 DEBUG = True
 
 
-ALLOWED_HOSTS = ['182.163.102.66','supportportal.tallykhata.com', 'localhost','127.0.0.1']
+ALLOWED_HOSTS = ['','supportportal.tallykhata.com', 'localhost','127.0.0.1']
 
 # Application definition
 
