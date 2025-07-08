@@ -139,7 +139,7 @@ def idtp_status_check_api(current_date_time_utc_6, from_date, to_date):
     ts = current_date_time_utc_6
     orgId = "TPAYBDDH"
     msgId = "1"
-    id_ = "8ENSVVR4QOS7X1UGPY7JGUV444PL9T2C3QM"
+    id_ = ""
     note = "Get Transactions by FI"
     channelID = "Online"
     userVID_value = "tpaybddh@fin.binimoy"
@@ -188,8 +188,8 @@ def paystation_recharge_status_check(request_id):
         "refer_no": request_id
     })
     headers = {
-        'username': '1014',
-        'password': 'n%V#zp1Y',
+        'username': '',
+        'password': '',
         'Content-Type': 'application/json'
     }
 
@@ -374,7 +374,7 @@ def limit_change_api(payload):
     # import requests
     # import json
     #
-    # url = "10.10.67.10:7010/api/transaction/limit-config/wallet"
+    # url = ""
     #
     # payload = json.dumps(payload)
     # headers = {
