@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% load static %}
+    {% include "include_head.html" %}
+    {% load crispy_forms_tags %}
+    {% load crispy_forms_filters %}
+    {% load humanize %}
+    {% load i18n %}
+    <title>TK DATA MISSING</title>
+
+    <style>
+        #navbar {
+            width: 100%;
+            background-color: #f8f9fa; /* Adjust the background color as needed */
+            padding: 0px 0;
+        }
+
+        #searchContainerWrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20vh; /* Adjust this value to control the vertical positioning */
+        }
+
+        #searchContainer {
+            text-align: center;
+        }
+
+        /* Override the container class to make the navbar full width */
+        .full-width-container {
+            width: 100%;
+            max-width: 100%;
+            padding-right: 15px;
+            padding-left: 15px;
+            margin-right: auto;
+            margin-left: auto;
+        }
+
+        /* Additional styles to ensure full-width navbar */
+        .navbar-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 1200px; /* Adjust this value as needed to control the max width of navbar content */
+            margin: 0 auto;
+        }
+
+
+        #table th, #table td {
+        padding: 8px;
+        border-spacing: 0;
+        }
+
+        /* Add this CSS for fitting the profile photo within the modal */
+        .modal-body img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+        .tallykhata-container {
+                text-align: center;
+                margin: 20px;
+                font-family: Helvetica, Arial, sans-serif;
+            }
+
+            .tallykhata-title {
+                font-size: 32px;
+                font-weight: bold;
+                color: #333;
+                margin-bottom: 10px;
+            }
+
+            .tallykhata-subtitle {
+                font-size: 15px;
+                color: #555;
+                margin-bottom: 5px;
+            }
+
+            .tallykhata-profile {
+                font-size: 10px;
+                color: #777;
+            }
+
+
+    </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+
+</head>
+
+<body onload="myFunction()" style="margin:0;">
+<div id="loader"></div> <!--To remove loader animation remove this div-->
+<main>
+    <div id="navbar">
+        {% include "navbar.html" %}
+    </div>
+
+    <div class="animate-page" id="myDiv" style="display:none;">
+        <!--To remove page bottom to top animation remove this div-->
+
+        <!--div class="container py-4" id="searchContainerWrapper" style="margin: auto; width: fit-content; "-->
+            <div class="container" id="searchContainer">
+                <h1 align="center">{{title}}</h1>
+                {% include "django_messages.html" %}
+                <br>
+                <!--Wallet input goes here-->
+                <form method="post">
+                    {% csrf_token %}
+                    {{form| crispy}}
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+
+            </div>
+
+            <!--Code for search box typing animation-->
+            <script>
+                  // Function to simulate typing animation
+                  function typePlaceholder(text, element, delay) {
+                    let i = 0;
+                    const interval = setInterval(() => {
+                      element.setAttribute('placeholder', text.slice(0, i + 1));
+                      i++;
+                      if (i === text.length) {
+                        clearInterval(interval);
+                      }
+                    }, delay);
+                  }
+
+                  // Call the animation function after two seconds
+                  setTimeout(() => {
+                    const searchInput = document.getElementById('wallet_num');
+                    const placeholderText = 'Please enter a wallet number';
+                    const typingDelay = 50; // Adjust the delay to control typing speed
+
+                    // Start the animation
+                    typePlaceholder(placeholderText, searchInput, typingDelay);
+                  }, 1000); // 2000 milliseconds = 2 seconds
+
+
+            </script>
+
+            <!--div style="overflow-x:auto;"-->
+            <div class="container py-4" id="searchContainerWrapper2" style="overflow-x: hidden; margin: auto; width: fit-content; ">
+                <div id="tableAndPre" {% if show_table_and_pre %}style="display:block;" {% else %}style="display:none;" {% endif %}>
+                <div class="container" style="max-width: 100%;">
+                        <div class="col-lg-12" style="overflow-x: auto;">
+                            <button id="downloadCSVButton" class="btn btn-primary">Download CSV</button>
+                            <button id="downloadPDFButton" class="btn btn-primary">Download PDF</button>
+                            <div id="pdfContent">
+                                <div class="tallykhata-container">
+                                    <h1 class="tallykhata-title">TallyKhata</h1>
+                                    <p class="tallykhata-subtitle">{{customer_need}}</p>
+                                    <p class="tallykhata-profile">Profile: {{profile}}</p>
+                                </div>
+                                {{html_table | safe}}
+                            </div>
+
+                        </div>
+                </div>
+                <br>
+            </div>
+                </div>
+        </div>
+
+    <!--/div-->
+
+</main>
+
+<script>
+    document.getElementById('downloadCSVButton').addEventListener('click', function() {
+    // Access the DataTable object
+    var table = $('#table').DataTable();
+
+    // Get column names from the DataTable
+    var columnNames = table.columns().header().toArray().map(header => header.innerText);
+
+    // Get all data from the DataTable
+    var data = table.rows().data().toArray();
+
+    // Define a variable to store the CSV data
+    var csv = [];
+
+    // Add column names as the first row in the CSV data
+    csv.push(columnNames.join(','));
+
+    // Loop through each row of the data
+    data.forEach(row => {
+        // Create an array to store the values of each row
+        var rowData = [];
+        // Loop through each value in the row and push it to the array
+        row.forEach(value => {
+            rowData.push(value);
+        });
+        // Join the row array into a CSV formatted string and push it to the csv array
+        csv.push(rowData.join(','));
+    });
+
+    // Join the csv array into a single string with line breaks
+    var csvContent = csv.join('\n');
+
+    // Create a Blob object containing the CSV data
+    var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
+
+    // Create a download link element
+    var link = document.createElement('a');
+    link.href = window.URL.createObjectURL(blob);
+    link.download = 'table_data.csv';
+
+    // Trigger the download
+    link.click();
+});
+
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+<script>
+    document.getElementById('downloadPDFButton').addEventListener('click', function () {
+        const { jsPDF } = window.jspdf;
+
+        // Get the content to convert
+        const pdfContent = document.getElementById('pdfContent');
+
+        html2canvas(pdfContent, { scale: 2 }).then((canvas) => {
+            const pdf = new jsPDF('p', 'mm', 'a4'); // Portrait, millimeters, A4 size
+
+            // Dimensions of the A4 page
+            const pageWidth = pdf.internal.pageSize.getWidth() - 20; // Subtract horizontal margins (10 each side)
+            const pageHeight = pdf.internal.pageSize.getHeight() - 20; // Subtract vertical margins (10 each side)
+
+            // Dimensions of the canvas image
+            const imgWidth = pageWidth;
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+            let heightLeft = imgHeight;
+            let position = 10; // Start position with top margin
+
+            // Add the first page
+            pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 10, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+
+            // Add additional pages if content overflows
+            while (heightLeft > 0) {
+                position = heightLeft - imgHeight; // Move to the next page
+                pdf.addPage();
+                pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 10, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+            }
+
+            // Save the PDF
+            pdf.save('TallyKhata_Report.pdf');
+        });
+    });
+</script>
+
+
+
+<!-- Include pdfMake library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.69/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.69/vfs_fonts.js"></script>
+<!-- Include jsPDF and html2pdf.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
+
+
+<!-- Include a Google Font for Bengali -->
+<link href="https://fonts.googleapis.com/css2?family=SolaimanLipi&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali&display=swap" rel="stylesheet">
+
+<script>
+<!-- Include jsPDF and jsPDF AutoTable Plugin -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.17/jspdf.plugin.autotable.min.js"></script>
+
+<!--<script>-->
+<!--document.getElementById('downloadPDFButton').addEventListener('click', function() {-->
+<!--    // Access the DataTable object-->
+<!--    var table = $('#table').DataTable();-->
+
+<!--    // Get column names from the DataTable-->
+<!--    var columnNames = table.columns().header().toArray().map(header => header.innerText);-->
+
+<!--    // Get all data from the DataTable-->
+<!--    var data = table.rows().data().toArray();-->
+
+<!--    // Function to encode all text to UTF-8 using TextEncoder-->
+<!--    function encodeText(text) {-->
+<!--        const encoder = new TextEncoder();-->
+<!--        const encodedText = encoder.encode(text);  // This encodes text as a Uint8Array (UTF-8)-->
+<!--        return new TextDecoder().decode(encodedText);  // Decode back to string-->
+<!--    }-->
+
+<!--    // Encode the column names and data-->
+<!--    columnNames = columnNames.map(encodeText);-->
+<!--    data = data.map(row => row.map(encodeText));-->
+
+<!--    // Prepare CSV content for download-->
+<!--    var csv = [];-->
+
+<!--    // Add column names as the first row in the CSV data-->
+<!--    csv.push(columnNames.join(','));-->
+
+<!--    // Loop through each row of the data-->
+<!--    data.forEach(row => {-->
+<!--        // Create an array to store the values of each row-->
+<!--        var rowData = [];-->
+<!--        // Loop through each value in the row and push it to the array-->
+<!--        row.forEach(value => {-->
+<!--            rowData.push(value);-->
+<!--        });-->
+<!--        // Join the row array into a CSV formatted string and push it to the csv array-->
+<!--        csv.push(rowData.join(','));-->
+<!--    });-->
+
+<!--    // Join the csv array into a single string with line breaks-->
+<!--    var csvContent = csv.join('\n');-->
+
+<!--    // Create a Blob object containing the CSV data-->
+<!--    var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });-->
+
+<!--    // Now create the PDF using jsPDF-->
+<!--    const { jsPDF } = window.jspdf;-->
+<!--    var doc = new jsPDF();-->
+
+<!--    // Add the Google Font (Noto Sans Bengali) for Bangla text-->
+<!--    doc.addFont('https://fonts.gstatic.com/s/notosansbengali/v8/4UaD6XKN47r5WcoWcTImYOz3rSHM0A0eWjFw8g.woff', 'NotoSansBengali', 'normal');-->
+<!--    doc.setFont('NotoSansBengali', 'normal');-->
+
+<!--    // Add the column names and data to the PDF using the correct font-->
+<!--    doc.autoTable({-->
+<!--        head: [columnNames],  // Set the header row with column names-->
+<!--        body: data,           // Set the data for the table-->
+<!--        theme: 'striped',     // Optional: Gives the table a striped appearance-->
+<!--    });-->
+
+<!--    // Save the PDF with the desired file name-->
+<!--    doc.save('table_data.pdf');-->
+<!--});-->
+<!--</script>-->
+
+
+
+<!--<script>-->
+<!--document.getElementById('downloadPDFButton').addEventListener('click', function() {-->
+<!--    // Access the DataTable object-->
+<!--    var table = $('#table').DataTable();-->
+
+<!--    // Get column names from the DataTable-->
+<!--    var columnNames = table.columns().header().toArray().map(header => header.innerText);-->
+
+<!--    // Get all data from the DataTable-->
+<!--    var data = table.rows().data().toArray();-->
+
+<!--    // Function to directly encode text for Bangla compatibility-->
+<!--    function encodeToBangla(text) {-->
+<!--        // Convert text to UTF-8 (URL encoding) and then decode it back-->
+<!--        return decodeURIComponent(encodeURIComponent(text));-->
+<!--    }-->
+
+<!--    // Encode the column names and data-->
+<!--    columnNames = columnNames.map(name => encodeToBangla(name));-->
+
+<!--    // Apply encoding to each cell of data-->
+<!--    data = data.map(row => row.map(value => encodeToBangla(value)));-->
+
+<!--    // Prepare CSV content for download-->
+<!--    var csv = [];-->
+
+<!--    // Add column names as the first row in the CSV data-->
+<!--    csv.push(columnNames.join(','));-->
+
+<!--    // Loop through each row of the data-->
+<!--    data.forEach(row => {-->
+<!--        var rowData = [];-->
+<!--        row.forEach(value => {-->
+<!--            rowData.push(value);-->
+<!--        });-->
+<!--        csv.push(rowData.join(','));-->
+<!--    });-->
+
+<!--    // Join the csv array into a single string with line breaks-->
+<!--    var csvContent = csv.join('\n');-->
+
+<!--    // Create a Blob object containing the CSV data-->
+<!--    var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });-->
+
+<!--    // Now create the PDF using jsPDF-->
+<!--    const { jsPDF } = window.jspdf;-->
+<!--    var doc = new jsPDF();-->
+
+<!--    // Add the Google Font (Noto Sans Bengali) for Bangla text-->
+<!--    doc.addFont('https://fonts.gstatic.com/s/notosansbengali/v8/4UaD6XKN47r5WcoWcTImYOz3rSHM0A0eWjFw8g.woff', 'NotoSansBengali', 'normal');-->
+<!--    doc.setFont('NotoSansBengali', 'normal');-->
+
+<!--    // Add the column names and data to the PDF using the correct font-->
+<!--    doc.autoTable({-->
+<!--        head: [columnNames],  // Set the header row with column names-->
+<!--        body: data,           // Set the data for the table-->
+<!--        theme: 'striped',     // Optional: Gives the table a striped appearance-->
+<!--    });-->
+
+<!--    // Save the PDF with the desired file name-->
+<!--    doc.save('table_data.pdf');-->
+<!--});-->
+<!--</script>-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--Include loader script-->
+<script src="{% static 'js/loader.js' %}" type="text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+
+
+
+</body>
+</html>
+

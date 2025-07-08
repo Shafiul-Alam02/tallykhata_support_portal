@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% load static %}
+    {% include "include_head.html" %}
+    {% load crispy_forms_tags %}
+    {% load crispy_forms_filters %}
+
+    <title>PNE LOG SAVE</title>
+
+    <style>
+        #navbar {
+            width: 100%;
+            background-color: #f8f9fa; /* Adjust the background color as needed */
+        }
+
+        #searchContainerWrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20vh; /* Adjust this value to control the vertical positioning */
+        }
+
+        #searchContainer {
+            text-align: center;
+        }
+
+        /* Override the container class to make the navbar full width */
+        .full-width-container {
+            width: 100%;
+            max-width: 100%;
+            padding-right: 15px;
+            padding-left: 12px;
+            margin-right: auto;
+            margin-left: auto;
+        }
+
+        /* Additional styles to ensure full-width navbar */
+        .navbar-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 1200px; /* Adjust this value as needed to control the max width of navbar content */
+            margin: 0 auto;
+        }
+
+
+            /* Table Styling */
+    #table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 5px 0;
+        font-size: 15px;
+        background-color: #ffffff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    #table th {
+        background-color: #02b0b0;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        color: #f8f9fa;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    #table tr:nth-child(even) {
+        background-color: #f8f9fa;
+    }
+
+    #table tr:nth-child(odd) {
+        background-color: #ffffff;
+    }
+
+    #table tr:hover {
+        background-color: #e9ecef;
+    }
+
+
+
+
+    #table tfoot th {
+        color: #ffffff;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+         /* Modal Image Styling */
+        .modal-body img {
+            display: block;
+            max-width: 100%;
+            max-height: 100%;
+            margin: 0 auto;
+            border-radius: 8px;
+        }
+
+                /* Animation */
+        .animate-page {
+            animation: fadeIn 1s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        @include media-breakpoint-only(xs) { ... }
+        @include media-breakpoint-only(sm) { ... }
+        @include media-breakpoint-only(md) { ... }
+        @include media-breakpoint-only(lg) { ... }
+        @include media-breakpoint-only(xl) { ... }
+
+
+                /* Filter Form */
+        .filter-form {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .filter-form form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .filter-form label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .filter-form input, .filter-form select {
+            padding: 10px;
+            width: auto;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .btn {
+            padding:10px;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom:15px;
+        }
+
+        .btn:hover {
+            background-color: #cf3d45;
+        }
+        .form-group {
+            display: flex;
+            align-items: center;
+            gap: 5px; /* Spacing between labels and inputs */
+        }
+        .submit-container {
+            display: flex;
+            justify-content: center;
+            padding-bottom: 10px;
+        }
+        .counts-container {
+            display: flex;
+            justify-content: flex-end; /* Align counts to the right */
+            margin-right: 100px; /* Space between boxes */
+            margin-bottom:25px;
+        }
+
+        .count-box {
+            background-color: #a5e7eb; /* Card color */
+            padding: 5px;
+            color: black; /* White text for contrast */
+            margin-left: 10px; /* Space between boxes */
+            border-radius: 8px; /* Rounded corners */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+            font-size: 10px; /* Larger font size for readability */
+            text-align: center; /* Center text */
+            margin-right: 10px;
+        }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+
+<body onload="myFunction()" style="margin:0;">
+<div id="loader"></div> <!--To remove loader animation remove this div-->
+<main>
+    {% include "navbar.html" %}
+
+    <div class="animate-page" id="myDiv" style="display:none;">
+        <!--To remove page bottom to top animation remove this div-->
+        <div>
+            <div class="col-lg-12" style="overflow-x: auto;">
+                {% include "django_messages.html" %}
+                <div class="filter-form">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            {{ filter_form.as_p }}
+                        </div>
+                        <div class="submit-container">
+                            <button type="submit" class="btn btn-primary">Filter</button>
+                        </div>
+                        <div class="submit-container">
+                            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal"
+                                    data-target="#createModal">
+                                Create Task
+                            </button>
+                        </div>
+                        <div class="counts-container">
+                            <div class="count-box">
+                                <p class="count-box_text"><strong>IN_PROGRESS Count:</strong> {{ in_progress_count }}
+                                </p>
+                            </div>
+                            <div class="count-box">
+                                <p class="count-box_text"><strong>NOT_ASSIGNED Count:</strong> {{ not_assigned_count }}
+                                </p>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+
+                <!-- Modal  for creating new entry the row-->
+                <!-- Modal for creating a new entry -->
+                <div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="createModalLabel"
+                     aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="createModalLabel">Create New Task</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="createForm" method="post">
+                                    {% csrf_token %}
+                                    {{ form|crispy }}
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary" form="createForm">Save changes</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="modal fade" id="graphModal" tabindex="-1" role="dialog" aria-labelledby="graphModalLabel"
+                     aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="graphModalLabel">Key Performance Indicator KPI of</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <h5>Date and Action Type Wise Activity Count</h5>
+                                <div id="plotly-graph-1"></div> <!-- Container for the first graph -->
+                                <h5>Status and Activity breakdown count</h5>
+                                <div id="plotly-graph-2"></div> <!-- Container for the second graph -->
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <table id="table" class="table display table-bordered" style="table-layout: auto; width: 100%;">
+            <thead>
+            <tr>
+                <th>SL</th>
+                <th>Create Date</th>
+                <th>Subject</th>
+                <th>Created By</th>
+                <th>Assignee</th>
+                <th>Action Type</th>
+                <th>Status</th>
+                <th>View</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in task_data_queryset %}
+            <tr>
+                <td>{{ item.id }}</td>
+                <td>{{ item.created_at}}</td>
+                <td>{{ item.subject }}</td>
+                <td>{{ item.created_by_name }}</td>
+                <td>{{ item.assignee }}</td>
+                <td>{{ item.action_type }}</td>
+                <td>{{ item.status}}</td>
+                <td>
+                    <button type="button" class="btn btn-info" data-toggle="modal"
+                            data-target="#detailsModal{{ item.pk }}">View
+                    </button>
+                    <button type="button" class="btn btn-primary" data-toggle="modal"
+                            data-target="#editModal{{ item.id }}">Edit
+                    </button>
+                </td>
+                <!--td>{{ item.updated_at}}</td-->
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="9">No data available</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <!-- jQuery -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+        <!-- DataTables JS -->
+        <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+
+        <!-- Initialize DataTables -->
+        <script>
+            $(document).ready(function() {
+                // Destroy existing instance if it exists
+                if ($.fn.DataTable.isDataTable('#table')) {
+                    $('#table').DataTable().destroy();
+                }
+
+                // Initialize DataTable with existing table data
+                $('#table').DataTable({
+                    "order": [[0, "desc"]] // Order by ID descending
+                });
+            });
+        </script>
+        <!-- Include DataTables CSS and JS -->
+        <!--                        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">-->
+        <!--                        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>-->
+        <!--                        <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>-->
+
+        <!--                        <script>-->
+        <!--                            $(document).ready(function() {-->
+        <!--                                $('#table').DataTable({-->
+        <!--                                    "paging": true,-->
+        <!--                                    "searching": true,-->
+        <!--                                    "ordering": true,-->
+        <!--                                    "lengthChange": true,-->
+        <!--                                    "pageLength": 10,-->
+        <!--                                    "info": true-->
+        <!--                                });-->
+        <!--                            });-->
+        <!--                        </script>-->
+
+        <!-- Details Modal -->
+        {% for item in task_data_queryset %}
+        <div class="modal fade" id="detailsModal{{ item.id }}" tabindex="-1" role="dialog"
+             aria-labelledby="detailsModalLabel{{ item.id }}" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="detailsModalLabel{{ item.id }}"><strong>Details for ticket:
+                            {{ item.id }}</strong></h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body text-left">
+                        <p><strong>Created By:</strong> {{ item.created_by_name }}</p>
+                        <p><strong>Created By Username:</strong> {{ item.created_by_username }}</p>
+                        <p><strong>Assignee:</strong> {{ item.assignee }}</p>
+                        <p><strong>Action Type:</strong> {{ item.action_type }}</p>
+                        <p><strong>Status:</strong> {{ item.status }}</p>
+                        <p><strong>Subject:</strong> {{ item.subject }}</p>
+                        <p><strong>Details:</strong> {{ item.details }}</p>
+                        <p><strong>Created At:</strong> {{ item.created_at }}</p>
+                        <p><strong>Updated At:</strong> {{ item.updated_at }}</p>
+                        <hr>
+                        <strong>Updates:</strong>
+                        <ul>
+                            {% for update in item.updates.all %}
+                            <li>
+                                <strong>
+                                    At {{ update.updated_at }} Updated By: {{ update.updated_by_name }}<br>
+                                </strong>
+                                <strong>Update: </strong>{{ update.update_text }}<br>
+                            </li>
+                            {% empty %}
+                            <li>No updates available.</li>
+                            {% endfor %}
+                        </ul>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-toggle="modal"
+                                data-target="#deleteModal{{ item.id }}">Delete
+                        </button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        <!-- Delete Modal -->
+        {% for item in task_data_queryset %}
+        <div class="modal fade" id="deleteModal{{ item.id }}" tabindex="-1" role="dialog"
+             aria-labelledby="deleteModalLabel{{ item.id }}" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel{{ item.id }}"><strong>Delete Ticket: {{
+                            item.id }}</strong></h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to delete this ticket?</p>
+                        <form id="deleteForm{{ item.pk }}" method="POST"
+                              action="{% url 'delete_task' item.id %}">
+                            {% csrf_token %}
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <!-- Correct the form attribute to match the form ID -->
+                        <button type="submit" class="btn btn-danger" form="deleteForm{{ item.id }}">Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+
+        <!-- EDIT MODAL -->
+        {% for item in task_data_queryset %}
+        <!-- Check if item.id is rendering correctly -->
+        <div class="modal fade" id="editModal{{ item.id }}" tabindex="-1" role="dialog"
+             aria-labelledby="editModalLabel{{ item.id }}" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editModalLabel{{ item.id }}">
+                            <strong>Edit Ticket: {{ item.id }}</strong>
+                        </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editForm{{ item.id }}" method="POST" action="{% url 'edit_task' item.id %}">
+                            {% csrf_token %}
+                            <!-- CHANGED: Ensure 'item.form' is correctly passed from the view -->
+                            {{ item.form|crispy }}
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <!-- CHANGED: 'type="submit"' is already present on the button; 'form' ensures the correct form is targeted -->
+                        <button type="submit" class="btn btn-primary" form="editForm{{ item.id }}">Save
+                            changes
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+</main>
+
+<!--Include loader script-->
+<script src="{% static 'js/loader.js' %}" type="text/javascript"></script>
+
+<!--Create modal JS-->
+<script>
+    // JavaScript for handling the Create modal
+$('#createModal').on('show.bs.modal', function (event) {
+  var button = $(event.relatedTarget);
+  // No taskId needed for creation; assuming empty fields
+  $('#createForm')[0].reset(); // Reset form fields for creation
+});
+</script>
+
+<script src="{% static 'js/loader.js' %}" type="text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3"
+        crossorigin="anonymous"></script>
+
+
+</body>
+</html>
+
+
+
+

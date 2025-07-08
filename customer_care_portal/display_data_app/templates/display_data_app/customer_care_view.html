@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% load static %}
+    {% include "include_head.html" %}
+    {% load crispy_forms_tags %}
+    {% load crispy_forms_filters %}
+    {% load humanize %}
+    <title>WALLET STATEMENT</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        #navbar {
+            width: 100%;
+            background-color: #f8f9fa; /* Adjust the background color as needed */
+        }
+
+        #searchContainerWrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20vh; /* Adjust this value to control the vertical positioning */
+        }
+
+        #searchContainer {
+            text-align: center;
+        }
+
+        /* Override the container class to make the navbar full width */
+        .full-width-container {
+            width: 100%;
+            max-width: 100%;
+            padding-right: 15px;
+            padding-left: 15px;
+            margin-right: auto;
+            margin-left: auto;
+        }
+
+        /* Additional styles to ensure full-width navbar */
+        .navbar-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 1200px; /* Adjust this value as needed to control the max width of navbar content */
+            margin: 0 auto;
+        }
+        /* General Body Styling */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f9;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        /* Container Styling */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header Styling */
+        h1 {
+            color: #dc3545;
+            font-size: 2em;
+            margin-bottom: 20px;
+            font-weight: bold;
+            font-family: 'Helvetica', Helvetica, Arial, sans-serif;
+        }
+        h3 {
+            color: #050505;
+            font-size: 2em;
+            margin-bottom: 20px;
+            font-weight: bold;
+            font-family: Arial, sans-serif;
+        }
+
+       /* Table Styling */
+        #table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 16px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            table-layout: auto;
+            }
+            #table th, #table td {
+            padding: 12px 15px;
+            text-align: left;
+            word-wrap: break-word; /* Prevents text overflow */
+            }
+            font-family: Helvetica, Arial, sans-serif;
+        #table th {
+                background-color: #DC4C64;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                color: #f8f9fa;
+                font-weight: bold;
+                text-transform: uppercase;
+            }
+
+        #table tr:nth-child(even) {
+            font-size: 14px;
+            color: black;
+            font-family: Helvetica, Arial, sans-serif;
+        }
+
+        #table tr:nth-child(odd) {
+            font-size: 14px;
+            font-family: Helvetica, Arial, sans-serif;
+        }
+
+        #table tr:hover {
+            background-color: #e9ecef;
+        }
+
+            /* Add this CSS for fitting the profile photo within the modal */
+            .modal-body img {
+                max-width: 100%;
+                max-height: 100%;
+            }
+        /* Card styling */
+        .card {
+            border: 1px solid #dc3545; /* Subtle border for better definition */
+            border-radius: 8px; /* Rounded corners */
+            overflow: hidden; /* Ensure content fits within the card */
+            margin-bottom: 10px; /* Space between cards */
+            width: 350px; /* Fixed width for uniform card size */
+            height: 200px; /* Fixed height for uniform card size */
+        }
+
+        .card .container {
+            padding: 16px; /* Padding inside the card */
+            background-color: #fff; /* White background */
+        }
+
+        .card p {
+            margin: 0 0 10px; /* Space between paragraphs */
+            color: #050505; /* Dark text color for readability */
+            font-weight: 500; /* Medium font weight for emphasis */
+        }
+
+        .card p b {
+            color: #050505; /* Highlighted text in primary color */
+        }
+
+        .card a {
+            color: #050505; /* Link color */
+            text-decoration: none; /* No underline for links */
+        }
+
+<!--        .card a:hover {-->
+<!--            text-decoration: underline; /* Underline on hover for clarity */-->
+<!--        }-->
+             /* Container styling */
+    </style>
+
+</head>
+
+<body onload="myFunction()" style="margin:0;">
+<div id="loader"></div> <!--To remove loader animation remove this div-->
+<main>
+    <div id="navbar">
+        {% include "navbar.html" %}
+    </div>
+
+ <div class="animate-page" id="myDiv" style="display:none;">
+    <!--Container for the forms-->
+     <h1 align="center">{{ title }}</h1>
+     {% include "django_messages.html" %}
+    <div class="container" id="searchContainer">
+        <div class="row justify-content-center">
+            <!-- Transaction Info Card -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card m-3">
+                    <div class="card-body">
+                        <h3 class="card-title text-center">Waller transactions</h3>
+                        <form action="{% url 'transaction_info' %}" method="post">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <input id="wallet_num" class="search-input-center form-control" name="wallet_num" required maxlength="11" type="number" placeholder="Enter wallet number">
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block mt-3">SEARCH</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6">
+                <div class="card m-3">
+                    <div class="card-body">
+                        <h3 class="card-title text-center">Transaction details</h3>
+                        <form action="{% url 'txn_details' %}" method="post">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <input id="wallet_num9" class="search-input-center form-control" name="txn_num" required maxlength="17"  placeholder="Enter txn number">
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block mt-3">SEARCH</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wallet Limit and MDR Card -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card m-3">
+                    <div class="card-body">
+                        <h3 class="card-title text-center"> Custom Wallet Limit</h3>
+                        <form action="{% url 'limit_info' %}" method="post">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <input id="wallet_num2" class="search-input-center form-control" name="wallet_num" required maxlength="11" pattern="[0-9]{11}" placeholder="Enter Wallet number">
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block mt-3">SEARCH</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Selfie Matching Score Card -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card m-3">
+                    <div class="card-body">
+                        <h3 class="card-title text-center">Selfie Matching Score</h3>
+                        <form action="{% url 'selfie_matching_score' %}" method="post">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <input id="selfie_matching_score" class="search-input-center form-control" name="selfie_matching_score" required maxlength="11" pattern="[0-9]{11}" placeholder="Enter Wallet number" onKeyPress="if(this.value.length==11) return false;">
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block mt-3">SEARCH</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bank & MFS Details Card -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card m-3">
+                    <div class="card-body">
+                        <h3 class="card-title text-center">Bank & MFS Details</h3>
+                        <form action="{% url 'get_wallet_details' %}" method="post">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <input id="wallet_num3" class="search-input-center form-control" name="wallet_num" required maxlength="11" pattern="[0-9]{11}" placeholder="Enter Wallet number" onKeyPress="if(this.value.length==11) return false;">
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block mt-3">SEARCH</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="card m-3">
+                    <div class="card-body">
+                        <h3 class="card-title text-center">Merchant ID</h3>
+                        <form action="{% url 'merchant_id' %}" method="post">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <input class="search-input-center form-control" name="merchant_id" required maxlength="16" pattern="[0-9]{16}" placeholder="Enter Wallet number" onKeyPress="if(this.value.length==16) return false;">
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block mt-3">SEARCH</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="card m-3">
+                    <div class="card-body">
+                        <h3 class="card-title text-center">TRIED COUNT OF NID</h3>
+                        <form action="{% url 'nid_usage_log' %}" method="post">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <input class="search-input-center form-control" name="nid_num" required maxlength="17" placeholder="Enter Nid number" onKeyPress="if(this.value.length==17) return false;">
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block mt-3">SEARCH</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="card m-3">
+                    <div class="card-body">
+                        <h3 class="card-title text-center">WALLETS AGAINST NID</h3>
+                        <form action="{% url 'wallets_against_nid' %}" method="post">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <input class="search-input-center form-control" name="nid_num" required maxlength="17" placeholder="Enter Nid number" onKeyPress="if(this.value.length==17) return false;">
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block mt-3">SEARCH</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="card m-3">
+                    <div class="card-body">
+                        <h3 class="card-title text-center">NPSB INQUERY</h3>
+                        <form action="{% url 'npsb_inquery' %}" method="post">
+                            {% csrf_token %}
+                            <div class="form-group">
+                               <input id="txn_num" class="search-input-center form-control" name="txn_num" align="left" placeholder="Enter transaction number" maxlength="15" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block mt-3">SEARCH</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Code for search box typing animation -->
+<script>
+    function typePlaceholder(text, element, delay) {
+        let i = 0;
+        const interval = setInterval(() => {
+            element.setAttribute('placeholder', text.slice(0, i + 1));
+            i++;
+            if (i === text.length) {
+                clearInterval(interval);
+            }
+        }, delay);
+    }
+
+    setTimeout(() => {
+        const searchInput = document.getElementById('wallet_num');
+        const placeholderText = 'Please enter a wallet number';
+        const typingDelay = 50;
+        typePlaceholder(placeholderText, searchInput, typingDelay);
+    }, 1000);
+
+    setTimeout(() => {
+        const searchInput2 = document.getElementById('wallet_num2');
+        const placeholderText = 'Please enter a wallet number';
+        const typingDelay = 50;
+        typePlaceholder(placeholderText, searchInput2, typingDelay);
+    }, 1000);
+</script>
+
+
+
+
+
+<!--            &lt;!&ndash;div style="overflow-x:auto;"&ndash;&gt;-->
+<!--            <div class="container py-4" id="searchContainerWrapper2" style="overflow-x: hidden; margin: auto; width: fit-content; ">-->
+<!--                <div id="tableAndPre" {% if show_table_and_pre %}style="display:block;" {% else %}style="display:none;" {% endif %}>-->
+<!--                <div class="container" style="max-width: 100%;">-->
+<!--                    <div class="row">-->
+<!--                        <div class="col-md-4">-->
+<!--                            <div class="card">-->
+<!--                                <div class="container" >-->
+<!--                                    <p><b>Wallet:</b> {{wallet}}</p>-->
+<!--                                    <p><b>User Type:</b> {{user_type}}</p>-->
+<!--                                    <p><b>Balance:</b> {{balance}}</p>-->
+<!--                                    <p><b>Full Name:</b> {{full_name}}</p>-->
+<!--                                    <p><b>Business Name:</b> {{business_name}}</p>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div class="col-md-4">-->
+<!--                            <div class="card">-->
+<!--                                <div class="container" >-->
+<!--                                    <p><b>Profile Photo:</b> <a href="{{profile_photo}}" class="image-link" data-toggle="modal" data-target="#profilePhotoModal">View Profile Photo</a></p>-->
+<!--                                    <p><b>Identity Status:</b> {{identity_status}}</p>-->
+<!--                                    <p><b>Bank Account Status:</b> {{bank_account_status}}</p>-->
+<!--                                    <p><b>QR Code:</b> <a href="{{qr_code}}" class="image-link" data-toggle="modal" data-target="#qrCodeModal">View QR Code</a></p>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                            &lt;!&ndash; Modal for Profile Photo &ndash;&gt;-->
+<!--                            <div class="modal fade" id="profilePhotoModal" tabindex="-1" role="dialog" aria-labelledby="profilePhotoModalLabel" aria-hidden="true">-->
+<!--                                <div class="modal-dialog" role="document">-->
+<!--                                    <div class="modal-content">-->
+<!--                                        <div class="modal-header">-->
+<!--                                            <h4 class="modal-title" id="profilePhotoModalLabel"><b>Profile Photo</b></h4>-->
+<!--                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
+<!--                                                <span aria-hidden="true">&times;</span>-->
+<!--                                            </button>-->
+<!--                                        </div>-->
+<!--                                        <div class="modal-body">-->
+<!--                                            <img id="profilePhotoImage" src="" alt="Profile Photo">-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+
+<!--                            &lt;!&ndash; Modal for QR Code &ndash;&gt;-->
+<!--                            <div class="modal fade" id="qrCodeModal" tabindex="-1" role="dialog" aria-labelledby="qrCodeModalLabel" aria-hidden="true">-->
+<!--                                <div class="modal-dialog" role="document">-->
+<!--                                    <div class="modal-content">-->
+<!--                                        <div class="modal-header">-->
+<!--                                            <h4 class="modal-title" id="qrCodeModalLabel"><b>QR Code</b></h4>-->
+<!--                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
+<!--                                                <span aria-hidden="true">&times;</span>-->
+<!--                                            </button>-->
+<!--                                        </div>-->
+<!--                                        <div class="modal-body">-->
+<!--                                            <img id="qrCodeImage" src="" alt="QR Code">-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+
+<!--                            <script>-->
+<!--    // Function to handle the click event on image links-->
+<!--    document.querySelectorAll('.image-link').forEach(item => {-->
+<!--        item.addEventListener('click', event => {-->
+<!--            // Prevent the default action of following the link-->
+<!--            event.preventDefault();-->
+<!--            // Get the URL of the image from the href attribute of the clicked link-->
+<!--            const imageUrl = item.getAttribute('href');-->
+<!--            // Get the ID of the modal corresponding to the clicked link-->
+<!--            const modalId = item.getAttribute('data-target');-->
+<!--            // Set the src attribute of the image in the modal to display the clicked image-->
+<!--            document.querySelector(`${modalId} img`).setAttribute('src', imageUrl);-->
+<!--            // Open the modal-->
+<!--            $(modalId).modal('show');-->
+<!--        });-->
+<!--    });-->
+<!--</script>-->
+
+<!--                        </div>-->
+<!--                        <div class="col-md-4">-->
+<!--                            <div class="card">-->
+<!--                                <div class="container" >-->
+<!--                                    <p><b>NID Front Photo:</b> <a href="{{nid_front_image}}" class="image-link" data-toggle="modal" data-target="#nidFrontModal">View NID Front</a> {{nid_front_status}} </p>-->
+<!--                                    <p><b>NID Back Photo:</b> <a href="{{nid_back_image}}" class="image-link" data-toggle="modal" data-target="#nidBackModal">View NID Back</a> {{nid_back_status}} </p>-->
+<!--                                    <p><b>Trade License:</b> <a href="{{trade_license_image}}" class="image-link" data-toggle="modal" data-target="#tradeLicenseModal">View Trade License</a> {{trade_license_status}} </p>-->
+<!--                                    <p><b>Shop Image:</b> <a href="{{SHOP_IMAGE_1_image}}" class="image-link" data-toggle="modal" data-target="#shopImageModal">View Shop Image</a> {{SHOP_IMAGE_1_status}} </p>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                            &lt;!&ndash; Modal for NID Front &ndash;&gt;-->
+<!--                            <div class="modal fade" id="nidFrontModal" tabindex="-1" role="dialog" aria-labelledby="profilePhotoModalLabel" aria-hidden="true">-->
+<!--                                <div class="modal-dialog" role="document">-->
+<!--                                    <div class="modal-content">-->
+<!--                                        <div class="modal-header">-->
+<!--                                            <h4 class="modal-title" id="nidFrontModalLabel"><b>NID Front Photo</b></h4>-->
+<!--                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
+<!--                                                <span aria-hidden="true">&times;</span>-->
+<!--                                            </button>-->
+<!--                                        </div>-->
+<!--                                        <div class="modal-body">-->
+<!--                                            <img id="nidFrontPhotoImage" src="" alt="Profile Photo">-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+
+<!--                            &lt;!&ndash; Modal for NID Back Code &ndash;&gt;-->
+<!--                            <div class="modal fade" id="nidBackModal" tabindex="-1" role="dialog" aria-labelledby="nidBackModalLabel" aria-hidden="true">-->
+<!--                                <div class="modal-dialog" role="document">-->
+<!--                                    <div class="modal-content">-->
+<!--                                        <div class="modal-header">-->
+<!--                                            <h4 class="modal-title" id="nidBackModalLabel"><b>NID Back Photo</b></h4>-->
+<!--                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
+<!--                                                <span aria-hidden="true">&times;</span>-->
+<!--                                            </button>-->
+<!--                                        </div>-->
+<!--                                        <div class="modal-body">-->
+<!--                                            <img id="nidBackImage" src="" alt="QR Code">-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+
+<!--                            &lt;!&ndash; Modal for Trade License Code &ndash;&gt;-->
+<!--                            <div class="modal fade" id="tradeLicenseModal" tabindex="-1" role="dialog" aria-labelledby="tradeLicenseModalLabel" aria-hidden="true">-->
+<!--                                <div class="modal-dialog" role="document">-->
+<!--                                    <div class="modal-content">-->
+<!--                                        <div class="modal-header">-->
+<!--                                            <h4 class="modal-title" id="tradeLicenseModalLabel"><b>Trade License</b></h4>-->
+<!--                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
+<!--                                                <span aria-hidden="true">&times;</span>-->
+<!--                                            </button>-->
+<!--                                        </div>-->
+<!--                                        <div class="modal-body">-->
+<!--                                            <img id="tradeLicenseImage" src="" alt="Trade License">-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+
+<!--                            &lt;!&ndash; Modal for Shop Image Code &ndash;&gt;-->
+<!--                            <div class="modal fade" id="shopImageModal" tabindex="-1" role="dialog" aria-labelledby="tradeLicenseModalLabel" aria-hidden="true">-->
+<!--                                <div class="modal-dialog" role="document">-->
+<!--                                    <div class="modal-content">-->
+<!--                                        <div class="modal-header">-->
+<!--                                            <h4 class="modal-title" id="shopImageModalLabel"><b>Shop Image</b> </h4>-->
+<!--                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
+<!--                                                <span aria-hidden="true">&times;</span>-->
+<!--                                            </button>-->
+<!--                                        </div>-->
+<!--                                        <div class="modal-body">-->
+<!--                                            <img id="shopImage" src="" alt="Trade License">-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+
+<!--                            <script>-->
+<!--    // Function to handle the click event on image links-->
+<!--    document.querySelectorAll('.image-link').forEach(item => {-->
+<!--        item.addEventListener('click', event => {-->
+<!--            // Prevent the default action of following the link-->
+<!--            event.preventDefault();-->
+<!--            // Get the URL of the image from the href attribute of the clicked link-->
+<!--            const imageUrl = item.getAttribute('href');-->
+<!--            // Get the ID of the modal corresponding to the clicked link-->
+<!--            const modalId = item.getAttribute('data-target');-->
+<!--            // Set the src attribute of the image in the modal to display the clicked image-->
+<!--            document.querySelector(`${modalId} img`).setAttribute('src', imageUrl);-->
+<!--            // Open the modal-->
+<!--            $(modalId).modal('show');-->
+<!--        });-->
+<!--    });-->
+<!--</script>-->
+
+
+<!--&lt;!&ndash;                      Test      &ndash;&gt;-->
+
+
+<!--        <table id="table" class="table table-bordered" style="table-layout: auto; width: 100%;">-->
+<!--            <tr>-->
+<!--                &lt;!&ndash; First Column &ndash;&gt;-->
+<!--                <td style="vertical-align: top; padding: 10px;">-->
+<!--                    <div class="card">-->
+<!--                        <div class="container">-->
+<!--                            <p><b>Wallet:</b> {{wallet}}</p>-->
+<!--                            <p><b>User Type:</b> {{user_type}}</p>-->
+<!--                            <p><b>Balance:</b> {{balance}}</p>-->
+<!--                            <p><b>Full Name:</b> {{full_name}}</p>-->
+<!--                            <p><b>Business Name:</b> {{business_name}}</p>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </td>-->
+
+<!--                &lt;!&ndash; Second Column &ndash;&gt;-->
+<!--                <td style="vertical-align: top; padding: 10px;">-->
+<!--                    <div class="card">-->
+<!--                        <div class="container">-->
+<!--                            <p><b>Profile Photo:</b> <a href="{{profile_photo}}" class="image-link" data-toggle="modal" data-target="#profilePhotoModal">View Profile Photo</a></p>-->
+<!--                            <p><b>Identity Status:</b> {{identity_status}}</p>-->
+<!--                            <p><b>Bank Account Status:</b> {{bank_account_status}}</p>-->
+<!--                            <p><b>QR Code:</b> <a href="{{qr_code}}" class="image-link" data-toggle="modal" data-target="#qrCodeModal">View QR Code</a></p>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </td>-->
+
+<!--                &lt;!&ndash; Third Column &ndash;&gt;-->
+<!--                <td style="vertical-align: top; padding: 10px;">-->
+<!--                    <div class="card">-->
+<!--                        <div class="container">-->
+<!--                            <p><b>NID Front Photo:</b> <a href="{{nid_front_image}}" class="image-link" data-toggle="modal" data-target="#nidFrontModal">View NID Front</a> {{nid_front_status}}</p>-->
+<!--                            <p><b>NID Back Photo:</b> <a href="{{nid_back_image}}" class="image-link" data-toggle="modal" data-target="#nidBackModal">View NID Back</a> {{nid_back_status}}</p>-->
+<!--                            <p><b>Trade License:</b> <a href="{{trade_license_image}}" class="image-link" data-toggle="modal" data-target="#tradeLicenseModal">View Trade License</a> {{trade_license_status}}</p>-->
+<!--                            <p><b>Shop Image:</b> <a href="{{SHOP_IMAGE_1_image}}" class="image-link" data-toggle="modal" data-target="#shopImageModal">View Shop Image</a> {{SHOP_IMAGE_1_status}}</p>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </td>-->
+<!--            </tr>-->
+<!--        </table>-->
+
+
+
+<!--&lt;!&ndash;                            Test&ndash;&gt;-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <br>-->
+<!--                        <div class="col-lg-12" style="overflow-x: auto;">-->
+<!--                            <h4>Wallet Statement</h4>-->
+<!--                            <br>-->
+<!--                            <form id="filterForm" class="mb-3">-->
+<!--                                <div class="row">-->
+<!--                                    <div class="col-md-3">-->
+<!--                                        <input type="text" class="form-control" id="filterCreatedBy" placeholder="TXN_NUMBER">-->
+<!--                                    </div>-->
+<!--                                    <div class="col-md-3">-->
+<!--                                        <input type="text" class="form-control" id="filterAssignee" placeholder="CHANNEL">-->
+<!--                                    </div>-->
+<!--                                    <div class="col-md-3">-->
+<!--                                        <input type="text" class="form-control" id="filterActionType" placeholder="TXN_TYPE">-->
+<!--                                    </div>-->
+<!--                                    <div class="col-md-3">-->
+<!--                                        <button type="button" class="btn btn-primary w-100" onclick="applyFilter()">Apply Filter</button>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+
+<!--                            </form>-->
+<!--                            <div style="overflow-x: auto; max-width: 100%; margin-bottom: 10px;">-->
+<!--                                <div style="width: 1000px;">-->
+<!--                                    <table id="table" class="table table-bordered" style="table-layout: auto; width: 100%;">-->
+<!--                                        <thead class="bg-danger">-->
+<!--                                        <tr>-->
+<!--                                            <th>DETAILS</th>-->
+<!--                                            <th>PROCESS_DATE</th>-->
+<!--                                            <th>TXN_NUMBER</th>-->
+<!--                                            <th>CHANNEL</th>-->
+<!--                                            <th>TXN_TYPE</th>-->
+<!--                                            <th>FROM_OWNER_NAME</th>-->
+<!--                                            <th>TO_OWNER_NAME</th>-->
+<!--                                            <th>DEBIT</th>-->
+<!--                                            <th>CREDIT</th>-->
+<!--                                            <th>REVERSE_STATUS</th>-->
+<!--                                            <th>CHARGEBACK_OF_ID</th>-->
+<!--                                            <th>RELEASE_STATUS</th>-->
+<!--                                        </tr>-->
+<!--                                        </thead>-->
+
+<!--                                        <tbody>-->
+<!--                                        {% for item in statement_queryset %}-->
+<!--                                        <tr>-->
+<!--                                            <td>-->
+<!--                                                <button type="button" class="btn btn-info btn-md" data-toggle="modal" data-target="#myModal{{ forloop.counter }}">View Details</button>-->
+<!--                                                &lt;!&ndash; Modal &ndash;&gt;-->
+<!--                                                <div id="myModal{{ forloop.counter }}" class="modal fade" role="dialog">-->
+<!--                                                  <div class="modal-dialog">-->
+
+<!--                                                    &lt;!&ndash; Modal content&ndash;&gt;-->
+<!--                                                    <div class="modal-content">-->
+<!--                                                      <div class="modal-header">-->
+<!--                                                        <button type="button" class="close" data-dismiss="modal">&times;</button>-->
+<!--                                                        <h6 class="modal-title"><b>Transaction Details</b></h6>-->
+<!--                                                      </div>-->
+<!--                                                      <div class="modal-body">-->
+<!--                                                            <br><br><b>PROCESS_DATE: </b>{{ item.0 }}-->
+<!--                                                            <br><br><b>TRANSACTION_NUMBER: </b>{{ item.1 }}-->
+<!--                                                            <br><br><b>FROM_OWNER_NAME: </b>{{ item.2 }}-->
+<!--                                                            <br><br><b>TO_OWNER_NAME: </b>{{ item.3 }}-->
+<!--                                                            <br><br><b>DEBIT_AMOUNT: </b>{{ item.4 }}-->
+<!--                                                            <br><br><b>CREDIT_AMOUNT: </b>{{ item.5 }}-->
+<!--                                                            <br><br><b>REVERSE_STATUS: </b>{{ item.6 }}-->
+<!--                                                            <br><br><b>CHARGEBACK_OF_ID: </b>{{ item.7 }}-->
+<!--                                                            <br><br><b>RELEASE_STATUS: </b>{{ item.8 }}-->
+<!--                                                            <br><br><b>TXN_TYPE: </b>{{ item.9 }}-->
+<!--                                                            <br><br><b>FROM_AC_TYPE: </b>{{ item.10 }}-->
+<!--                                                            <br><br><b>TO_AC_TYPE: </b>{{ item.11 }}-->
+<!--                                                            <br><br><b>CHARGE_FLAG: </b>{{ item.12 }}-->
+<!--                                                        </p>-->
+<!--                                                      </div>-->
+<!--                                                      <div class="modal-footer">-->
+<!--                                                          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>-->
+<!--                                                          <button type="button" class="btn btn-info" onclick="copyData('{{ forloop.counter }}')">Copy</button>-->
+<!--                                                      </div>-->
+<!--                                                    </div>-->
+
+<!--                                                  </div>-->
+<!--                                                </div>-->
+<!--                                            </td>-->
+<!--                                            <td>{{ item.0 }}</td>  &lt;!&ndash; Replace field1 with your actual field names &ndash;&gt;-->
+<!--                                            <td>{{ item.1 }}</td>  &lt;!&ndash; Replace field2 with your actual field names &ndash;&gt;-->
+<!--                                            <td>{{item.13}}</td>-->
+<!--                                            <td>{{ item.9 }}</td>-->
+<!--                                            <td>{{ item.2 }} ({{ item.10 }})</td>-->
+<!--                                            <td>{{ item.3 }} ({{ item.11 }})</td>-->
+<!--                                            <td style="color: red;">{{ item.4 | intcomma }}</td>-->
+<!--                                            <td style="color: green;">{{ item.5 | intcomma }}</td>-->
+<!--                                            <td>{{ item.6 }}</td>-->
+<!--                                            <td>{{ item.7 }}</td>-->
+<!--                                            <td>{{ item.8 }}</td>-->
+<!--                                        </tr>-->
+<!--                                        {% endfor %}-->
+<!--                                        </tbody>-->
+
+        <!--                                <tfoot>-->
+        <!--                                <tr>-->
+        <!--                                    <th>DETAILS</th>-->
+        <!--                                    <th>PROCESS_DATE</th>-->
+        <!--                                    <th>TXN_NUMBER</th>-->
+        <!--                                    <th>CHANNEL</th>-->
+        <!--                                    <th>TXN_TYPE</th>-->
+        <!--                                    <th>FROM_OWNER_NAME</th>-->
+        <!--                                    <th>TO_OWNER_NAME</th>-->
+        <!--                                    <th>DEBIT</th>-->
+        <!--                                    <th>CREDIT</th>-->
+        <!--                                    <th>REVERSE_STATUS</th>-->
+        <!--                                    <th>CHARGEBACK_OF_ID</th>-->
+        <!--                                    <th>RELEASE_STATUS</th>-->
+        <!--                                </tr>-->
+        <!--                                </tfoot>-->
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+                <br>
+            </div>
+                </div>
+        </div>
+
+    <!--/div-->
+
+</main>
+
+
+
+<!--Include loader script-->
+<script src="{% static 'js/loader.js' %}" type="text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+    function applyFilter() {
+        var createdByFilter = document.getElementById('filterCreatedBy').value.toLowerCase();
+        var assigneeFilter = document.getElementById('filterAssignee').value.toLowerCase();
+        var actionTypeFilter = document.getElementById('filterActionType').value.toLowerCase();
+
+        var table = document.getElementById('table');
+        var rows = table.getElementsByTagName('tr');
+
+        for (var i = 1; i < rows.length; i++) {
+            var cells = rows[i].getElementsByTagName('td');
+            var createdBy = cells[2] ? cells[2].innerText.toLowerCase() : '';
+            var assignee = cells[3] ? cells[3].innerText.toLowerCase() : '';
+            var actionType = cells[4] ? cells[4].innerText.toLowerCase() : '';
+
+            if (createdBy.includes(createdByFilter) && assignee.includes(assigneeFilter) && actionType.includes(actionTypeFilter)) {
+                rows[i].style.display = '';
+            } else {
+                rows[i].style.display = 'none';
+            }
+        }
+    }
+
+    function copyData(modalId) {
+    const modalBody = document.querySelector(`#myModal${modalId} .modal-body`).innerText;
+     navigator.clipboard.writeText(modalBody).then(function() {
+            const modalElement = document.querySelector(`#myModal${modalId}`);
+            const modal = new bootstrap.Modal(modalElement);
+            modal.hide(); // This line closes the modal using Bootstrap 5 method
+        }, function(err) {
+            console.error("Failed to copy: ", err);
+        });
+    }
+</script>
+
+
+</body>
+</html>
+
+

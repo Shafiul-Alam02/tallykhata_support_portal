@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% load static %}
+    {% include "include_head.html" %}
+    {% load crispy_forms_tags %}
+    {% load crispy_forms_filters %}
+    {% load humanize %}
+    <title>TRANSACTION INFO</title>
+
+    <style>
+        #navbar {
+            width: 100%;
+            background-color: #f8f9fa; /* Adjust the background color as needed */
+        }
+
+        #searchContainerWrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20vh; /* Adjust this value to control the vertical positioning */
+        }
+
+        #searchContainer {
+            text-align: center;
+        }
+
+        /* Override the container class to make the navbar full width */
+        .full-width-container {
+            width: 100%;
+            max-width: 100%;
+            padding-right: 15px;
+            padding-left: 15px;
+            margin-right: auto;
+            margin-left: auto;
+        }
+
+        /* Additional styles to ensure full-width navbar */
+        .navbar-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 1200px; /* Adjust this value as needed to control the max width of navbar content */
+            margin: 0 auto;
+        }
+
+
+            /* Table Styling */
+    #table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        font-size: 11px;
+        background-color: #ffffff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    #table th {
+        background-color: #02b0b0;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        color: #f8f9fa;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    #table tr:nth-child(even) {
+        background-color: #f8f9fa;
+    }
+
+    #table tr:nth-child(odd) {
+        background-color: #ffffff;
+    }
+
+    #table tr:hover {
+        background-color: #e9ecef;
+    }
+
+
+
+
+    #table tfoot th {
+        color: #ffffff;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+         /* Modal Image Styling */
+        .modal-body img {
+            display: block;
+            max-width: 100%;
+            max-height: 100%;
+            margin: 0 auto;
+            border-radius: 8px;
+        }
+
+                /* Animation */
+        .animate-page {
+            animation: fadeIn 1s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        <!-- CSS Styling -->
+<style>
+    /* Form Styling */
+    #filterForm .form-row {
+        margin: 0 -5px;
+    }
+
+    #filterForm .form-group {
+        padding: 0 5px;
+        margin-bottom: 15px;
+    }
+
+    /* Labels */
+    .form-label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    /* Datepicker and Input Fields */
+    .form-control.datepicker {
+        padding: 8px 10px;
+        font-size: 14px;
+    }
+
+    /* Select Field */
+    .form-control {
+        font-size: 14px;
+    }
+
+    /* Button Styling */
+    #filterForm .btn-primary {
+        font-size: 14px;
+        padding: 10px;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+    }
+
+    #filterForm .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    /* Layout */
+    @media (max-width: 768px) {
+        #filterForm .form-group {
+            margin-bottom: 10px;
+            flex: 1 1 100%;
+        }
+    }
+</style>
+
+    </style>
+
+</head>
+
+<body onload="myFunction()" style="margin:0;">
+<div id="loader"></div> <!--To remove loader animation remove this div-->
+<main>
+    <div id="navbar">
+        {% include "navbar.html" %}
+    </div>
+
+    <div class="animate-page" id="myDiv" style="display:none;">
+        <!--To remove page bottom to top animation remove this div-->
+
+        <!--div class="container py-4" id="searchContainerWrapper" style="margin: auto; width: fit-content; "-->
+            <div class="container" id="searchContainer">
+                <h4 align="center">{{title}}</h4>
+                {% include "django_messages.html" %}
+
+                <!--Wallet input goes here-->
+                <form action="{% url 'transaction_info' %}" method="post">
+                    {% csrf_token %}
+                    {{form| crispy}}
+                    <div class="wrapper" style="display: flex; flex-direction: column; align-items: center;">
+                    <span class="inline">
+                        <p> <input id="wallet_num" class="search-input" name="wallet_num" align="left" placeholder="" required maxlength="11" type="number">
+                            <br><br><input type="submit" class="btn btn-primary" value="SEARCH" name="search">
+                        </p>
+                    </span>
+                    </div>
+                </form>
+
+            </div>
+
+            <!--Code for search box typing animation-->
+            <script>
+                  // Function to simulate typing animation
+                  function typePlaceholder(text, element, delay) {
+                    let i = 0;
+                    const interval = setInterval(() => {
+                      element.setAttribute('placeholder', text.slice(0, i + 1));
+                      i++;
+                      if (i === text.length) {
+                        clearInterval(interval);
+                      }
+                    }, delay);
+                  }
+
+                  // Call the animation function after two seconds
+                  setTimeout(() => {
+                    const searchInput = document.getElementById('wallet_num');
+                    const placeholderText = 'Please enter a wallet number';
+                    const typingDelay = 50; // Adjust the delay to control typing speed
+
+                    // Start the animation
+                    typePlaceholder(placeholderText, searchInput, typingDelay);
+                  }, 1000); // 2000 milliseconds = 2 seconds
+
+
+            </script>
+
+
+
+
+<div class="col-lg-12" style="overflow-x: auto;">
+
+
+<!-- Filter Form -->
+<form id="filterForm" class="form-inline mb-3">
+    <div class="form-row align-items-center">
+        <div class="form-group col-md-2">
+            <label for="fromDate" class="form-label">From date</label>
+            <input type="text" id="fromDate" class="form-control datepicker" autocomplete="off" placeholder="YYYY-MM-DD">
+        </div>
+        <div class="form-group col-md-2">
+            <label for="toDate" class="form-label">To date</label>
+            <input type="text" id="toDate" class="form-control datepicker" autocomplete="off" placeholder="YYYY-MM-DD">
+        </div>
+        <div class="form-group col-md-2">
+            <label for="resultSize" class="form-label">Result size</label>
+            <input type="number" id="resultSize" class="form-control" min="1" required="required" placeholder="10">
+        </div>
+        <div class="form-group col-md-2">
+            <label for="txnID" class="form-label">Transaction ID</label>
+            <input type="text" id="txnID" class="form-control" placeholder="Enter ID">
+        </div>
+        <div class="form-group col-md-2">
+            <label for="txnType" class="form-label">Transaction Type</label>
+            <select id="txnType" class="form-control">
+                <option value="">-Any-</option>
+                <option value="CASH_IN_FROM_CARD">Add money from card</option>
+                <option value="CASH_OUT">Cash out</option>
+                <!-- Add more options as needed -->
+            </select>
+        </div>
+        <div class="form-group col-md-2">
+            <button type="button" class="btn btn-primary mt-4 w-100" onclick="applyFilters()">Apply Filters</button>
+        </div>
+    </div>
+</form>
+
+
+
+
+
+
+    <!-- Wallet Statement Table -->
+<!-- Wallet Statement Table -->
+<table id="table" class="table table-bordered" style="table-layout: auto; width: 100%;">
+    <thead>
+        <tr>
+            <th>COPY</th>
+            <th>DETAILS</th>
+            <th>TRANSACTION TIME</th>
+            <th>AMOUNT</th>
+            <th>TRANSACTION ID</th>
+            <th>TXN_TYPE</th>
+            <th>STATUS</th>
+            <th>Transaction Fees</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in statement_queryset %}
+        <tr>
+            <td>
+                <!-- Copy Button -->
+                <button type="button" class="btn btn-primary btn-sm" onclick="copyTableData('{{ item.0 }}', '{{ item.1 }}', '{{ item.2 }}', '{{ item.3 }}', '{{ item.4 }}', '{{ item.5 }}')">Copy</button>
+            </td>
+            <td>
+                <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal{{ forloop.counter }}">View Details</button>
+
+                <!-- Modal -->
+                <div id="myModal{{ forloop.counter }}" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h6 class="modal-title"><b>Transaction Details</b></h6>
+                            </div>
+                            <div class="modal-body">
+                                <b>TRANSACTION TIME: </b>{{ item.0 }}<br>
+                                <b>AMOUNT: </b><span style="color: red;">{{ item.1 | intcomma }}</span>
+                                <b>TRANSACTION ID: </b><span style="color: green;">{{ item.2 | intcomma }}</span><br>
+                                <b>TXN_TYPE: </b>{{ item.3 }}<br>
+                                <b>STATUS: </b>{{ item.4 }}<br>
+                                <b>Transaction Fees</b>{{ item.5 }}<br>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary" onclick="copyTableData('{{ item.0 }}', '{{ item.1 }}', '{{ item.2 }}', '{{ item.3 }}', '{{ item.4 }}', '{{ item.5 }}')">Copy</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td>{{ item.0 }}</td>
+            <td>{{ item.1 }}</td>
+            <td>
+                <a href="#" onclick="submitTxnForm('{{ item.2 }}')">{{ item.2 }}</a>
+            </td>
+            <td>{{ item.3 }}</td>
+            <td>{{ item.4 }}</td>
+            <td>{{ item.5 }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+<script>
+    function copyTableData(transactionTime, debitAmount, creditAmount, transactionId, txnType, status) {
+        var content =
+            'TRANSACTION TIME: ' + transactionTime + '\n' +
+            'AMOUNT: ' + debitAmount + '\n' +
+            'TRANSACTION ID: ' + creditAmount + '\n' +
+            'TXN_TYPE: ' + txnType + '\n' +
+            'STATUS: ' + status;
+
+        navigator.clipboard.writeText(content).then(function() {
+            console.log('Content copied to clipboard');
+        }).catch(function(err) {
+            console.error('Could not copy text: ', err);
+        });
+    }
+</script>
+<!-- Hidden form for auto-submission -->
+<form id="txnForm" action="{% url 'txn_details' %}" method="post" style="display: none;">
+    {% csrf_token %}
+    <input type="hidden" name="txn_num" id="txnInput">
+</form>
+
+<script>
+    function submitTxnForm(txnNum) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = "{% url 'txn_details' %}";
+
+        // CSRF token
+        const csrfToken = "{{ csrf_token }}";
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = 'csrfmiddlewaretoken';
+        csrfInput.value = csrfToken;
+        form.appendChild(csrfInput);
+
+        // txn_num input
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'txn_num';
+        input.value = txnNum;
+        form.appendChild(input);
+
+        document.body.appendChild(form);
+        form.submit();
+    }
+</script>
+
+
+
+</div>
+
+<!-- Include DataTables CSS and JS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<!-- Include DatePicker CSS and JS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+
+
+
+<script>
+    // Initialize DataTable
+    var table = $('#table').DataTable({
+        "paging": true,
+        "searching": true,
+        "ordering": true,
+        "lengthChange": true,
+        "info": true
+    });
+
+    // Initialize DatePickers
+    flatpickr('.datepicker', {
+        dateFormat: "Y-m-d",
+        maxDate: "today"
+    });
+
+    // Apply filters
+    function applyFilters() {
+        let fromDate = $('#fromDate').val();
+        let toDate = $('#toDate').val();
+        let resultSize = $('#resultSize').val();
+        let txnID = $('#txnID').val();
+        let txnType = $('#txnType').val();
+
+        // Clear any previous filters
+        $.fn.dataTable.ext.search = [];
+
+        // Custom filter for date range and other filters
+        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+            let processDate = data[0]; // Adjust index if needed for PROCESS_DATE
+            let transactionNumber = data[1]; // TXN_NUMBER
+            let transactionType = data[2]; // TXN_TYPE
+
+            // Use Moment.js to parse the processDate as a timestamp
+            let dateObj = moment(processDate, "YYYY-MM-DD HH:mm:ss");
+            let fromDateObj = fromDate ? moment(fromDate, "YYYY-MM-DD").startOf('day') : null;
+            let toDateObj = toDate ? moment(toDate, "YYYY-MM-DD").endOf('day') : null;
+
+            // Check if processDate falls within the fromDate and toDate range
+            if (fromDateObj && dateObj.isBefore(fromDateObj)) return false;
+            if (toDateObj && dateObj.isAfter(toDateObj)) return false;
+
+            // Check for transaction ID match
+            if (txnID && !transactionNumber.includes(txnID)) return false;
+
+            // Check for transaction type match
+            if (txnType && transactionType !== txnType) return false;
+
+            return true; // Include the row if all checks pass
+        });
+
+        // Set page length based on result size
+        table.page.len(resultSize || 10).draw();
+
+        // Redraw table with new filters applied
+        table.draw();
+    }
+
+    // Attach applyFilters to button click
+    $('#applyFilterBtn').on('click', applyFilters);
+</script>
+
+
+
+</main>
+
+
+
+<!--Include loader script-->
+<script src="{% static 'js/loader.js' %}" type="text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+
+
+
+</body>
+</html>
+
+

@@ -1,0 +1,193 @@
+<!--<style>-->
+<!--    #navbar {-->
+<!--        width: 100%;-->
+<!--        background-color:  #02b0b0 !important;;-->
+<!--&lt;!&ndash;        color: #FFFFFF;&ndash;&gt;-->
+<!--    }-->
+
+<!--    #navbar a {-->
+<!--        color: #000000;-->
+<!--    }-->
+<!--    .nav-item{-->
+<!--&lt;!&ndash;        color: #ffffff;&ndash;&gt;-->
+<!--    }-->
+
+<!--    #navbar .navbar-content {-->
+<!--        color: #000000;-->
+<!--    }-->
+<!--</style>-->
+<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #02b0b0;">
+    <a class="navbar-brand" href="{% url 'home' %}">
+        <img alt="Bootstrap" height="30" src="/static/img/tp_logo.png" width="100">
+    </a>
+    <button aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation"
+            class="navbar-toggler"
+            data-target="#navbarNavDropdown" data-toggle="collapse" type="button">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <ul class="collapse navbar-collapse" id="navbarNavDropdown">
+        <ul class="navbar-nav">
+            <li class="nav-item active">
+                <a class="nav-link" href="{% url 'home' %}">Home</a>
+            </li>
+
+            {% if access_info.admin_access == 'YES' %}
+            <li class="nav-item dropdown">
+                <a aria-expanded="false" aria-haspopup="true" class="nav-link dropdown-toggle" data-toggle="dropdown"
+                   href="#"
+                   id="navbarDropdown5" role="button">
+                    Admin Panel
+                </a>
+                <div aria-labelledby="navbarDropdown5" class="dropdown-menu">
+                    <a class="dropdown-item" href="{% url 'user_management' %}">User Creation and access management</a>
+                </div>
+            </li>
+            {% endif %}
+
+            <li class="nav-item dropdown">
+                <a aria-expanded="false" aria-haspopup="true" class="nav-link dropdown-toggle" data-toggle="dropdown"
+                   href="#"
+                   id="navbarDropdown2" role="button">
+                    TallyPlus
+                </a>
+                <div aria-labelledby="navbarDropdown2" class="dropdown-menu">
+                    {% if access_info.tallypay_transaction_status_check == 'YES' %}
+                    <a class="dropdown-item" href="{% url 'tp_txn_status_search' %}">Transaction Status Report</a>
+                    {% endif %}
+
+                    {% if access_info.tallypay_transaction_status_check == 'YES' %}
+                    <a class="dropdown-item" href="{% url 'service_enquiry' %}">Transaction Enquiry</a>
+                    {% endif %}
+
+                    {% if access_info.tk_otp_mnp_access == 'YES' %}
+                    <a class="dropdown-item" href="{% url 'tk_mnp_issue' %}">OTP MNP Issue</a>
+                    {% endif %}
+
+                    {% if access_info.wallet_mdr_limit_access == 'YES' %}
+                    <a class="dropdown-item" href="{% url 'wallet_mdr_limit_search' %}">Custom Wallet Rate and MDR</a>
+                    {% endif %}
+
+                    {% if access_info.wallet_statement_details == 'YES' %}
+                    <a class="dropdown-item" href="{% url 'wallet_statement' %}">Wallet Statement</a>
+                    {% endif %}
+
+                    {% if access_info.tk_data_missing == 'YES' %}
+                    <a class="dropdown-item" href="{% url 'data_missing' %}">TK Data Missing</a>
+                    {% endif %}
+
+                    {% if access_info.service_health_check == 'YES' %}
+                    <a class="dropdown-item" href="{% url 'service_health_check' %}">Service Health Check</a>
+                    {% endif %}
+
+                    {% if access_info.eventapp_event == 'YES' %}
+                    <a class="dropdown-item" href="{% url 'eventapp_event' %}">Eventapp Event</a>
+                    {% endif %}
+
+                    {% if access_info.tallypay_issuer == 'YES' %}
+                    <a class="dropdown-item" href="{% url 'check_tallypay_issuer' %}">TallyPay Issuer</a>
+                    {% endif %}
+
+                    {% if access_info.tallypay_activity_log == 'YES' %}
+                    <a class="dropdown-item" href="{% url 'check_tallypay_activity_log' %}">TallyPay Activity Log</a>
+                    {% endif %}
+
+                    {% if access_info.sqr_timeout_cases == 'YES' %}
+                    <a class="dropdown-item" href="{% url 'check_sqr_timeout_cases' %}">SQR Timeout Cases</a>
+                    {% endif %}
+
+                    {% if access_info.check_wallet_or_nid == 'YES' %}
+                    <a class="dropdown-item" href="{% url 'check_wallet_or_nid' %}">Check Wallet Or NID</a>
+                    {% endif %}
+
+                    {% if access_info.can_check_remote_end_status == 'YES' %}
+                    <a class="dropdown-item" href="{% url 'remote_end_transaction_status_search' %}">Check Transaction
+                        Status</a>
+                    {% endif %}
+                </div>
+            </li>
+
+            <li class="nav-item dropdown">
+                <a aria-expanded="false" aria-haspopup="true" class="nav-link dropdown-toggle" data-toggle="dropdown"
+                   href="#"
+                   id="navbarDropdown7" role="button">
+                    Tasks
+                </a>
+                <div aria-labelledby="navbarDropdown7" class="dropdown-menu">
+                    {% if access_info.pne_log == 'YES' %}
+                    <a class="dropdown-item" href="{% url 'pne_support_log' %}">Tickets</a>
+                    {% endif %}
+
+                </div>
+            </li>
+
+            {% if access_info.sqr_data_download == 'YES' %}
+            <li class="nav-item dropdown">
+                <a aria-expanded="false" aria-haspopup="true" class="nav-link dropdown-toggle" data-toggle="dropdown"
+                   href="#"
+                   id="navbarDropdown1" role="button">
+                    Operations
+                </a>
+                <div aria-labelledby="navbarDropdown1" class="dropdown-menu">
+                    <a class="dropdown-item" href="{% url 'sqr_data_download' %}">Download SQR Wallet Data</a>
+                    {% endif %}
+                    {% if access_info.corporate_merchant_registration == 'YES' %}
+                    <a class="dropdown-item" href="{% url 'limit_email_generator' %}">Limit Change</a>
+                    {% endif %}
+                    {% if access_info.corporate_merchant_registration == 'YES' %}
+                    <a class="dropdown-item" href="{% url 'block_debit' %}">Block or Unblock Debit/Credit</a>
+                    {% endif %}
+                    <div class="dropdown-divider"></div>
+                    {% if access_info.corporate_merchant_registration == 'YES' %}
+                    <a class="dropdown-item" href="{% url 'corporate_merchant_registration' %}">Corporate Merchant
+                        Registration</a>
+                    <div class="dropdown-divider"></div>
+                </div>
+            </li>
+            {% endif %}
+            {% if access_info.complience == 'YES' %}
+            <li class="nav-item dropdown">
+                <a aria-expanded="false" aria-haspopup="true" class="nav-link dropdown-toggle" data-toggle="dropdown"
+                   href="#"
+                   id="navbarDropdown8" role="button">
+                    Compliance
+                </a>
+
+                <div aria-labelledby="navbarDropdown1" class="dropdown-menu">
+                     {% if access_info.complience_execution == 'YES' %}
+                    <a class="dropdown-item" href="{% url 'permission_table' %}">COMPLIANCE EXECUTE</a>
+                {% endif %}
+                    <div class="dropdown-divider"></div>
+                    {% if access_info.complience_maker == 'YES' %}
+                    <a class="dropdown-item" href="{% url 'block_debit' %}">Debit/Credit block/unblock request</a>
+                    {% endif %}
+                    {% if access_info.complience_call == 'YES' %}
+                    <a class="dropdown-item" href="{% url 'ticket_details' %}">Ticket Details</a>
+                    {% endif %}
+
+<!--                    <a class="dropdown-item" href="{% url 'sqr_data_download' %}">limit</a>-->
+                </div>
+            </li>
+            {% endif %}
+            <li class="nav-item active">
+                <a class="nav-link" href="{% url 'customer_care_view' %}">Customer Care</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a aria-expanded="false" aria-haspopup="true" class="nav-link dropdown-toggle" data-toggle="dropdown"
+                   href="#"
+                   id="navbarDropdown6" role="button">Settings</a>
+                <div aria-labelledby="navbarDropdown6" class="dropdown-menu">
+                    <a class="dropdown-item" href="{% url 'change_password' %}">Change Password</a>
+                </div>
+            </li>
+            <li class="nav-item logout-item">
+                <form action="{% url 'logout' %}" method="post" class="form-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn"><strong>Logout</strong></button>
+                </form>
+            </li>
+
+        </ul>
+    </ul>
+</nav>
+

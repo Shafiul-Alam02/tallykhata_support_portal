@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% load static %}
+    {% include "include_head.html" %}
+    <title>TP TXN SEARCH</title>
+
+    <style>
+        #navbar {
+            width: 100%;
+            background-color: #f8f9fa; /* Adjust the background color as needed */
+        }
+
+        #searchContainerWrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20vh; /* Adjust this value to control the vertical positioning */
+        }
+
+        #searchContainer {
+            text-align: center;
+        }
+
+        /* Override the container class to make the navbar full width */
+        .full-width-container {
+            width: 100%;
+            max-width: 100%;
+            padding-right: 15px;
+            padding-left: 15px;
+            margin-right: auto;
+            margin-left: auto;
+        }
+
+        /* Additional styles to ensure full-width navbar */
+        .navbar-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 1200px; /* Adjust this value as needed to control the max width of navbar content */
+            margin: 0 auto;
+        }
+
+
+
+
+
+
+
+
+    /* General Body Styling */
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f7f9;
+        margin: 0;
+        padding: 0;
+        color: #333;
+    }
+
+    /* Container Styling */
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    /* Header Styling */
+    h1 {
+<!--        color: #dc3545;-->
+        font-size: 2em;
+        margin-bottom: 20px;
+        font-weight: bold;
+        font-family: 'Helvetica', Helvetica, Arial, sans-serif;
+    }
+
+    /* Table Styling */
+    #table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        font-size: 16px;
+        background-color: #ffffff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    #table th {
+        background-color: #dc3545;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        color: #f8f9fa;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    #table tr:nth-child(even) {
+        background-color: #f8f9fa;
+    }
+
+    #table tr:nth-child(odd) {
+        background-color: #ffffff;
+    }
+
+    #table tr:hover {
+        background-color: #e9ecef;
+    }
+
+
+
+
+    #table tfoot th {
+        color: #ffffff;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+         /* Modal Image Styling */
+        .modal-body img {
+            display: block;
+            max-width: 100%;
+            max-height: 100%;
+            margin: 0 auto;
+            border-radius: 8px;
+        }
+
+                /* Animation */
+        .animate-page {
+            animation: fadeIn 1s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+
+
+
+    </style>
+
+</head>
+
+<body onload="myFunction()" style="margin:0;">
+<div id="loader"></div> <!--To remove loader animation remove this div-->
+<main>
+    <div id="navbar">
+        {% include "navbar.html" %}
+    </div>
+
+    <div class="animate-page" id="myDiv" style="display:none;">
+        <!--To remove page bottom to top animation remove this div-->
+
+        <div class="container py-4" id="searchContainerWrapper" style="overflow-x: auto; margin: auto; width: fit-content;">
+            <div class="container" id="searchContainer">
+                <h1 align="center">{{title}}</h1>
+                {% include "django_messages.html" %}
+                <br>
+                <!--Wallet input goes here-->
+                <form action="{% url 'get_tp_txn_status_search' %}" method="post">
+                    {% csrf_token %}
+                    <div class="wrapper" style="display: flex; flex-direction: column; align-items: center;">
+                    <span class="inline">
+                        <p> <input id="txn_num" class="search-input" name="txn_num" align="left" placeholder="" maxlength="15" required>
+                            <br><br><input type="submit" class="btn" style="background-color: #02b0b0; color:#fff" value="SEARCH" name="search">
+                        </p>
+                    </span>
+                    </div>
+                </form>
+            </div>
+
+<!--            Code for search box typing animation-->
+            <script>
+                  // Function to simulate typing animation
+                  function typePlaceholder(text, element, delay) {
+                    let i = 0;
+                    const interval = setInterval(() => {
+                      element.setAttribute('placeholder', text.slice(0, i + 1));
+                      i++;
+                      if (i === text.length) {
+                        clearInterval(interval);
+                      }
+                    }, delay);
+                  }
+
+                  // Call the animation function after two seconds
+                  setTimeout(() => {
+                    const searchInput = document.getElementById('txn_num');
+                    const placeholderText = 'Please enter a transaction number';
+                    const typingDelay = 50; // Adjust the delay to control typing speed
+
+                    // Start the animation
+                    typePlaceholder(placeholderText, searchInput, typingDelay);
+                  }, 1000); // 2000 milliseconds = 2 seconds
+
+
+            </script>
+
+            <!--div style="overflow-x:auto;"-->
+            <div id="tableAndPre" {% if show_table_and_pre %}style="display:block;" {% else %}style="display:none;" {% endif %}>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <h4>Core Data</h4>
+                            <table id="table" class="table table-bordered"  style="table-layout: auto;">
+                                <thead>
+                                <tr>
+                                    <th>Label</th>
+                                    <th>Data</th>
+                                </tr>
+                                </thead>
+
+                                <tbody>
+                                <tr>
+                                    <td>Status</td>
+                                    <td>{{decision_status}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Debit From Account and Type</td>
+                                    <td>{{from_account}}  {{from_account_type}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Credit To Account</td>
+                                    <td>{{to_account}} {{to_account_type}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Transaction Number</td>
+                                    <td>{{txn_number}}</td>
+                                </tr>
+                                <tr>
+                                    <td>External Transaction Number</td>
+                                    <td>{{invoice_no}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Amount</td>
+                                    <td>{{txn_amount}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Transaction Type</td>
+                                    <td>{{transaction_name}}</td>
+                                </tr>
+                                <tr>
+                                    <td>NP Transaction Type</td>
+                                    <td>{{txn_type}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Charge Flag</td>
+                                    <td>{{charge_flag}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Transaction Date</td>
+                                    <td>{{txn_date}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Description</td>
+                                    <td>{{txn_description}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Escrow Status</td>
+                                    <td>{{escrow_status}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Related Transaction Number</td>
+                                    <td>{{release_txn_num}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Reverse Status</td>
+                                    <td>{{reverse_status}}</td>
+                                </tr>
+<!--                                </tbody>-->
+
+<!--                                <tfoot>-->
+<!--                                <tr>-->
+<!--                                    <th>Label</th>-->
+<!--                                    <th>Data</th>-->
+<!--                                </tr>-->
+<!--                                </tfoot>-->
+
+                            </table>
+                            <br>
+
+
+                            <h4>Component Data</h4>
+                            <table>
+                                {{html_table_code |safe }}
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+
+                <br>
+<!--                <h2>Remote End Response</h2>-->
+
+<!--                <pre id="code-block">-->
+<!--                    {{remote_end_response|safe}}-->
+<!--                </pre>-->
+<!--                <button class="btn btn-primary copy-button" id="copy-button" onclick="copyCode()">Copy Code</button>-->
+<!--                <br><br>-->
+
+<!--                &lt;!&ndash;JS to beautify the code&ndash;&gt;-->
+<!--                <script src="https://cdn.jsdelivr.net/npm/prettier@2.4.1/standalone/index.js"></script>-->
+<!--                <script>-->
+<!--                  // Get the raw JSON or XML response as a string from the {{ remote_end_response }} variable-->
+<!--                  const rawResponse = '{{ remote_end_response|safe }}';-->
+
+<!--                  // Format the JSON or XML response using prettier-->
+<!--                  let formattedData;-->
+
+<!--                  try {-->
+<!--                    // Try parsing as JSON and format-->
+<!--                    const jsonData = JSON.parse(rawResponse);-->
+<!--                    formattedData = prettier.format(JSON.stringify(jsonData), { parser: 'json' });-->
+<!--                  } catch (error) {-->
+<!--                    try {-->
+<!--                      // If parsing as JSON fails, try formatting as XML-->
+<!--                      formattedData = prettier.format(rawResponse, { parser: 'xml' });-->
+<!--                    } catch (error) {-->
+<!--                      // If both JSON and XML formatting fail, use the raw data-->
+<!--                      formattedData = rawResponse;-->
+<!--                    }-->
+<!--                  }-->
+<!--                  // Get the <pre> element and set its content with the formatted data-->
+<!--                  const preElement = document.getElementById('code-block');-->
+<!--                  preElement.textContent = formattedData;-->
+
+<!--                </script>-->
+<!--                &lt;!&ndash; JS to copy the code from pre tag&ndash;&gt;-->
+<!--                <script>-->
+<!--                    function copyCode() {-->
+<!--                        var codeBlock = document.getElementById("code-block");-->
+<!--                        var range = document.createRange();-->
+<!--                        range.selectNode(codeBlock);-->
+<!--                        window.getSelection().removeAllRanges();-->
+<!--                        window.getSelection().addRange(range);-->
+
+<!--                        try {-->
+<!--                            // Attempt to copy the selected text-->
+<!--                            var successful = document.execCommand("copy");-->
+<!--                            var msg = successful ? "Code copied!" : "Unable to copy code.";-->
+<!--                            alert(msg);-->
+<!--                        } catch (err) {-->
+<!--                            console.error("Unable to copy code: ", err);-->
+<!--                        }-->
+
+<!--                        // Clear the selection-->
+<!--                        window.getSelection().removeAllRanges();-->
+<!--                    }-->
+
+
+<!--                </script>-->
+
+
+            </div>
+        </div>
+
+    </div>
+
+</main>
+
+<!--Include loader script-->
+<script src="{% static 'js/loader.js' %}" type="text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3"
+        crossorigin="anonymous"></script>
+
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+

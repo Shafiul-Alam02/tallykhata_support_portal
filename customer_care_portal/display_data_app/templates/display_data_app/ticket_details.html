@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% load static %}
+    {% include "include_head.html" %}
+    {% load crispy_forms_tags %}
+    {% load crispy_forms_filters %}
+    {% load humanize %}
+    <title>TRANSACTION INFO</title>
+
+    <style>
+        #navbar {
+            width: 100%;
+            background-color: #f8f9fa; /* Adjust the background color as needed */
+        }
+
+        #searchContainerWrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20vh; /* Adjust this value to control the vertical positioning */
+        }
+
+        #searchContainer {
+            text-align: center;
+        }
+
+        /* Override the container class to make the navbar full width */
+        .full-width-container {
+            width: 100%;
+            max-width: 100%;
+            padding-right: 15px;
+            padding-left: 15px;
+            margin-right: auto;
+            margin-left: auto;
+        }
+
+        /* Additional styles to ensure full-width navbar */
+        .navbar-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 1200px; /* Adjust this value as needed to control the max width of navbar content */
+            margin: 0 auto;
+        }
+
+
+            /* Table Styling */
+    #table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        font-size: 11px;
+        background-color: #ffffff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    #table th {
+        background-color: #02b0b0;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        color: #f8f9fa;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    #table tr:nth-child(even) {
+        background-color: #f8f9fa;
+    }
+
+    #table tr:nth-child(odd) {
+        background-color: #ffffff;
+    }
+
+    #table tr:hover {
+        background-color: #e9ecef;
+    }
+
+
+
+
+    #table tfoot th {
+        color: #ffffff;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+         /* Modal Image Styling */
+        .modal-body img {
+            display: block;
+            max-width: 100%;
+            max-height: 100%;
+            margin: 0 auto;
+            border-radius: 8px;
+        }
+
+                /* Animation */
+        .animate-page {
+            animation: fadeIn 1s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        <!-- CSS Styling -->
+<style>
+    /* Form Styling */
+    #filterForm .form-row {
+        margin: 0 -5px;
+    }
+
+    #filterForm .form-group {
+        padding: 0 5px;
+        margin-bottom: 15px;
+    }
+
+    /* Labels */
+    .form-label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    /* Datepicker and Input Fields */
+    .form-control.datepicker {
+        padding: 8px 10px;
+        font-size: 14px;
+    }
+
+    /* Select Field */
+    .form-control {
+        font-size: 14px;
+    }
+
+    /* Button Styling */
+    #filterForm .btn-primary {
+        font-size: 14px;
+        padding: 10px;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+    }
+
+    #filterForm .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    /* Layout */
+    @media (max-width: 768px) {
+        #filterForm .form-group {
+            margin-bottom: 10px;
+            flex: 1 1 100%;
+        }
+    }
+</style>
+
+    </style>
+
+</head>
+
+<body onload="myFunction()" style="margin:0;">
+<div id="loader"></div> <!--To remove loader animation remove this div-->
+<main>
+    <div id="navbar">
+        {% include "navbar.html" %}
+    </div>
+
+    <div class="animate-page" id="myDiv" style="display:none;">
+        <!--To remove page bottom to top animation remove this div-->
+
+        <!--div class="container py-4" id="searchContainerWrapper" style="margin: auto; width: fit-content; "-->
+            <div class="container" id="searchContainer">
+                <h4 align="center">{{title}}</h4>
+                {% include "django_messages.html" %}
+
+                <!--Wallet input goes here-->
+                <form action="{% url 'ticket_details' %}" method="post">
+                    {% csrf_token %}
+                    {{form| crispy}}
+                    <div class="wrapper" style="display: flex; flex-direction: column; align-items: center;">
+                    <span class="inline">
+                        <p> <input id="wallet_num" class="search-input" name="wallet_num" align="left" placeholder="" required maxlength="11" type="number">
+                            <br><br><input type="submit" class="btn btn-primary" value="SEARCH" name="search">
+                        </p>
+                    </span>
+                    </div>
+                </form>
+
+            </div>
+
+            <!--Code for search box typing animation-->
+            <script>
+                  // Function to simulate typing animation
+                  function typePlaceholder(text, element, delay) {
+                    let i = 0;
+                    const interval = setInterval(() => {
+                      element.setAttribute('placeholder', text.slice(0, i + 1));
+                      i++;
+                      if (i === text.length) {
+                        clearInterval(interval);
+                      }
+                    }, delay);
+                  }
+
+                  // Call the animation function after two seconds
+                  setTimeout(() => {
+                    const searchInput = document.getElementById('wallet_num');
+                    const placeholderText = 'Please enter a wallet number';
+                    const typingDelay = 50; // Adjust the delay to control typing speed
+
+                    // Start the animation
+                    typePlaceholder(placeholderText, searchInput, typingDelay);
+                  }, 1000); // 2000 milliseconds = 2 seconds
+
+
+            </script>
+
+
+
+
+<div class="col-lg-12" style="overflow-x: auto;">
+
+
+
+
+    <!-- Wallet Statement Table -->
+<!-- Wallet Statement Table -->
+<table id="table" class="table table-bordered">
+    <thead>
+        <tr>
+            <th>COPY</th>
+            <th>DETAILS</th>
+            <th>Ticket Number</th>
+            <th>Status</th>
+            <th>Assignee</th>
+            <th>Start Date</th>
+            <th>Wallet Number</th>
+<!--            <th>Additional Mobile Number</th>-->
+<!--            <th>USSD Screenshot</th>-->
+<!--            <th>NID Front</th>-->
+<!--            <th>NID Back</th>-->
+<!--            <th>Merchant Photo with Products</th>-->
+<!--            <th>Shop Front Signboard</th>-->
+<!--&lt;!&ndash;            <th>Shop with Neighbor Photos</th>&ndash;&gt;-->
+<!--            <th>Trade License</th>-->
+<!--            <th>CPV Form</th>-->
+            <th>Email Address</th>
+<!--            <th>Validity</th>-->
+            <th>Compliance Issue Type</th>
+            <th>Update Data in UPMS</th>
+            <th>Transaction Limit Type</th>
+            <th>Transaction Profile Type</th>
+            <th>Source of Request</th>
+            <th>Compliance Check Level</th>
+            <th>Category</th>
+<!--            <th>Wallet Status</th>-->
+<!--            <th>Last Month Value</th>-->
+<!--            <th>SIM NID Match</th>-->
+<!--            <th>Unmatched Alternate UPMS</th>-->
+<!--            <th>Input Type</th>-->
+<!--            <th>Single Input</th>-->
+            <th>First Call Date</th>
+            <th>First Call Response</th>
+            <th>Second Call Date</th>
+            <th>Second Call Response</th>
+            <th>Third Call Date</th>
+            <th>Third Call Response</th>
+<!--            <th>Pushed to UPMS</th>-->
+            <th>Notes</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in statement_queryset %}
+        <tr>
+            <td>
+                <button type="button" class="btn btn-primary btn-sm"
+                    onclick="copyTableData(
+                                '{{ item.1 }}',
+                                '{{ item.2 }}',
+                                '{{ item.3 }}',
+                                '{{ item.4 }}',
+                                '{{ item.5 }}',
+                                '{{ item.6 }}',
+                                '{{ item.7 }}',
+                                '{{ item.8 }}',
+                                '{{ item.9 }}',
+                                '{{ item.10 }}',
+                                '{{ item.11 }}',
+                                '{{ item.12 }}',
+                                '{{ item.13 }}',
+                                '{{ item.14 }}',
+                                '{{ item.15 }}',
+                                '{{ item.16 }}',
+                                '{{ item.17 }}',
+                                '{{ item.18 }}',
+                                '{{ item.19 }}',
+                                '{{ item.20 }}',
+                                '{{ item.21 }}',
+                                '{{ item.22 }}',
+                                '{{ item.23 }}',
+                                '{{ item.24 }}',
+                                '{{ item.25 }}',
+                                '{{ item.26 }}',
+                                '{{ item.27 }}',
+                                '{{ item.28 }}',
+                                '{{ item.29 }}',
+                                '{{ item.30 }}',
+                                '{{ item.31 }}',
+                                '{{ item.32 }}',
+                                '{{ item.33 }}',
+                                '{{ item.34 }}',
+                                '{{ item.35 }}',
+                                '{{ item.36 }}',
+                                '{{ item.37 }}'
+                            )">Copy</button>
+            </td>
+            <td>
+                <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal{{ forloop.counter }}">View Details</button>
+
+                <!-- Modal -->
+                <div id="myModal{{ forloop.counter }}" class="modal fade" role="dialog">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h6 class="modal-title"><b>Transaction Details</b></h6>
+                      </div>
+                      <div class="modal-body">
+                        <b>Ticket Number:</b> {{ item.1 }}<br>
+                        <b>Status:</b> {{ item.2 }}<br>
+                        <b>Assignee:</b> {{ item.3 }}<br>
+                        <b>Start Date:</b> {{ item.4 }}<br>
+                        <b>Wallet Number:</b> {{ item.5 }}<br>
+                        <b>Additional Mobile Number:</b> {{ item.6 }}<br>
+                        <b>USSD Screenshot:</b> {{ item.7 }}<br>
+                        <b>NID Front:</b> {{ item.8 }}<br>
+                        <b>NID Back:</b> {{ item.9 }}<br>
+                        <b>Merchant Photo with Products:</b> {{ item.10 }}<br>
+                        <b>Shop Front Signboard:</b> {{ item.11 }}<br>
+                        <b>Shop with Neighbor Photos:</b> {{ item.12 }}<br>
+                        <b>Trade License:</b> {{ item.13 }}<br>
+                        <b>CPV Form:</b> {{ item.14 }}<br>
+                        <b>Email Address:</b> {{ item.15 }}<br>
+                        <b>Validity:</b> {{ item.16 }}<br>
+                        <b>Compliance Issue Type:</b> {{ item.17 }}<br>
+                        <b>Update Data in UPMS:</b> {{ item.18 }}<br>
+                        <b>Transaction Limit Type:</b> {{ item.19 }}<br>
+                        <b>Transaction Profile Type:</b> {{ item.20 }}<br>
+                        <b>Source of Request:</b> {{ item.21 }}<br>
+                        <b>Compliance Check Level:</b> {{ item.22 }}<br>
+                        <b>Category:</b> {{ item.23 }}<br>
+                        <b>Wallet Status:</b> {{ item.24 }}<br>
+                        <b>Last Month Value:</b> {{ item.25 }}<br>
+                        <b>SIM NID Match:</b> {{ item.26 }}<br>
+                        <b>Unmatched Alternate UPMS:</b> {{ item.27 }}<br>
+                        <b>Input Type:</b> {{ item.28 }}<br>
+                        <b>Single Input:</b> {{ item.29 }}<br>
+                        <b>First Call Date:</b> {{ item.30 }}<br>
+                        <b>First Call Response:</b> {{ item.31 }}<br>
+                        <b>Second Call Date:</b> {{ item.32 }}<br>
+                        <b>Second Call Response:</b> {{ item.33 }}<br>
+                        <b>Third Call Date:</b> {{ item.34 }}<br>
+                        <b>Third Call Response:</b> {{ item.35 }}<br>
+                        <b>Pushed to UPMS:</b> {{ item.36 }}<br>
+                        <b>Notes:</b> {{ item.37 }}<br>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary"
+                          onclick="copyTableData(
+                            '{{ item.1 }}', '{{ item.2 }}', '{{ item.3 }}', '{{ item.4 }}', '{{ item.5 }}', '{{ item.6 }}', '{{ item.7 }}', '{{ item.8 }}', '{{ item.9 }}', '{{ item.10 }}',
+                            '{{ item.11 }}', '{{ item.12 }}', '{{ item.13 }}', '{{ item.14 }}', '{{ item.15 }}', '{{ item.16 }}', '{{ item.17 }}', '{{ item.18 }}', '{{ item.19 }}', '{{ item.20 }}',
+                            '{{ item.21 }}', '{{ item.22 }}', '{{ item.23 }}', '{{ item.24 }}', '{{ item.25 }}', '{{ item.26 }}', '{{ item.27 }}', '{{ item.28 }}', '{{ item.29 }}', '{{ item.30 }}',
+                            '{{ item.31 }}', '{{ item.32 }}', '{{ item.33 }}', '{{ item.34 }}', '{{ item.35 }}', '{{ item.36 }}', '{{ item.37 }}'
+                          )">Copy</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+            <td>{{ item.1 }}</td>
+            <td>{{ item.2 }}</td>
+            <td>{{ item.3 }}</td>
+            <td>{{ item.4 }}</td>
+            <td>{{ item.5 }}</td>
+<!--            <td>{{ item.6 }}</td>-->
+<!--            <td>{{ item.7 }}</td>-->
+<!--            <td>{{ item.8 }}</td>-->
+<!--            <td>{{ item.9 }}</td>-->
+<!--            <td>{{ item.10 }}</td>-->
+<!--            <td>{{ item.11 }}</td>-->
+<!--            <td>{{ item.12 }}</td>-->
+<!--            <td>{{ item.13 }}</td>-->
+<!--            <td>{{ item.14 }}</td>-->
+            <td>{{ item.15 }}</td>
+<!--            <td>{{ item.16 }}</td>-->
+            <td>{{ item.17 }}</td>
+            <td>{{ item.18 }}</td>
+            <td>{{ item.19 }}</td>
+            <td>{{ item.20 }}</td>
+            <td>{{ item.21 }}</td>
+            <td>{{ item.22 }}</td>
+            <td>{{ item.23 }}</td>
+<!--            <td>{{ item.24 }}</td>-->
+<!--            <td>{{ item.25 }}</td>-->
+<!--            <td>{{ item.26 }}</td>-->
+<!--            <td>{{ item.27 }}</td>-->
+<!--            <td>{{ item.28 }}</td>-->
+<!--            <td>{{ item.29 }}</td>-->
+            <td>{{ item.30 }}</td>
+            <td>{{ item.31 }}</td>
+            <td>{{ item.32 }}</td>
+            <td>{{ item.33 }}</td>
+            <td>{{ item.34 }}</td>
+            <td>{{ item.35 }}</td>
+<!--            <td>{{ item.36 }}</td>-->
+            <td>{{ item.37 }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+<script>
+    function copyTableData(
+        item1, item2, item3, item4, item5, item6, item7, item8, item9, item10,
+        item11, item12, item13, item14, item15, item16, item17, item18, item19, item20,
+        item21, item22, item23, item24, item25, item26, item27, item28, item29, item30,
+        item31, item32, item33, item34, item35, item36, item37
+    ) {
+        var content =
+            'Ticket Number: ' + item1 + '\n' +
+            'Status: ' + item2 + '\n' +
+            'Assignee: ' + item3 + '\n' +
+            'Start Date: ' + item4 + '\n' +
+            'Wallet Number: ' + item5 + '\n' +
+            'Additional Mobile Number: ' + item6 + '\n' +
+            'USSD Screenshot: ' + item7 + '\n' +
+            'NID Front: ' + item8 + '\n' +
+            'NID Back: ' + item9 + '\n' +
+            'Merchant Photo with Products: ' + item10 + '\n' +
+            'Shop Front Signboard: ' + item11 + '\n' +
+            'Shop with Neighbor Photos: ' + item12 + '\n' +
+            'Trade License: ' + item13 + '\n' +
+            'CPV Form: ' + item14 + '\n' +
+            'Email Address: ' + item15 + '\n' +
+            'Validity: ' + item16 + '\n' +
+            'Compliance Issue Type: ' + item17 + '\n' +
+            'Update Data in UPMS: ' + item18 + '\n' +
+            'Transaction Limit Type: ' + item19 + '\n' +
+            'Transaction Profile Type: ' + item20 + '\n' +
+            'Source of Request: ' + item21 + '\n' +
+            'Compliance Check Level: ' + item22 + '\n' +
+            'Category: ' + item23 + '\n' +
+            'Wallet Status: ' + item24 + '\n' +
+            'Last Month Value: ' + item25 + '\n' +
+            'SIM NID Match: ' + item26 + '\n' +
+            'Unmatched Alternate UPMS: ' + item27 + '\n' +
+            'Input Type: ' + item28 + '\n' +
+            'Single Input: ' + item29 + '\n' +
+            'First Call Date: ' + item30 + '\n' +
+            'First Call Response: ' + item31 + '\n' +
+            'Second Call Date: ' + item32 + '\n' +
+            'Second Call Response: ' + item33 + '\n' +
+            'Third Call Date: ' + item34 + '\n' +
+            'Third Call Response: ' + item35 + '\n' +
+            'Pushed to UPMS: ' + item36 + '\n' +
+            '--- End of Data ---';
+
+        navigator.clipboard.writeText(content).then(function () {
+            console.log('Content copied to clipboard');
+        }).catch(function (err) {
+            console.error('Could not copy text: ', err);
+        });
+    }
+</script>
+
+<!-- Hidden form for auto-submission -->
+<form id="txnForm" action="{% url 'txn_details' %}" method="post" style="display: none;">
+    {% csrf_token %}
+    <input type="hidden" name="txn_num" id="txnInput">
+</form>
+
+<script>
+    function submitTxnForm(txnNum) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = "{% url 'txn_details' %}";
+
+        // CSRF token
+        const csrfToken = "{{ csrf_token }}";
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = 'csrfmiddlewaretoken';
+        csrfInput.value = csrfToken;
+        form.appendChild(csrfInput);
+
+        // txn_num input
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'txn_num';
+        input.value = txnNum;
+        form.appendChild(input);
+
+        document.body.appendChild(form);
+        form.submit();
+    }
+</script>
+
+
+
+</div>
+
+<!-- Include DataTables CSS and JS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<!-- Include DatePicker CSS and JS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+
+
+
+
+
+</main>
+
+
+
+<!--Include loader script-->
+<script src="{% static 'js/loader.js' %}" type="text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+
+
+
+</body>
+</html>
+
+

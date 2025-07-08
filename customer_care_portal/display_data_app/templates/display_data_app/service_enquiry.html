@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% load static %}
+    {% include "include_head.html" %}
+    {% load crispy_forms_tags %}
+    {% load crispy_forms_filters %}
+    {% load humanize %}
+    <title>WALLET LIMIT & MDR CHECK</title>
+    <link rel="stylesheet" href="/static/css/app_stylesheet.css">
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8fRNG1ztm1DGMFio5AIyU1iPYyO8eap6Hk7fPIsdAUyV7" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+
+<style>
+    body {
+        margin: 0;
+    }
+    #loader {
+        /* Style for loader */
+    }
+    .animate-page {
+        display: none;
+    }
+
+
+    #searchContainerWrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 0vh; /* Adjust this value to control the vertical positioning */
+    }
+
+    #searchContainer {
+        text-align: center;
+    }
+    /* Table Styling */
+    #table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        font-size: 12px;
+        background-color: #02b0b0;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    #table th {
+        background-color: #02b0b0;
+        color: #fff;
+        font-weight: bold;
+        text-transform: uppercase;
+        padding: 10px;
+    }
+
+    #table td {
+        padding: 10px;
+    }
+
+    #table tr:nth-child(even) {
+        background-color: #f8f9fa;
+    }
+
+    #table tr:nth-child(odd) {
+        background-color: #ffffff;
+    }
+
+    #table tr:hover {
+        background-color: #e9ecef;
+    }
+
+
+    /* Modal Image Styling */
+    .modal-body img {
+        display: block;
+        max-width: 100%;
+        max-height: 100%;
+        margin: 0 auto;
+        border-radius: 8px;
+    }
+
+    /* Animation */
+    .animate-page {
+        animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+
+
+
+    * Main container styling */
+    #searchContainerWrapper {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 20px; /* Space between form and modal */
+        padding: 1rem;
+    }
+
+    /* Form styling */
+    form {
+        display: flex;
+        align-items: center;
+        gap: 10px; /* Space between input and button */
+    }
+
+    .search-input {
+        width: 200px; /* Set width as needed */
+        padding: 5px 10px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    .btn {
+        padding: 5px 10px;
+        font-size: 14px;
+        border: none;
+        cursor: pointer;
+        border-radius: 4px;
+        background-color: #02b0b0;
+        color: #fff;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn:hover {
+        background-color: #028a8a; /* Hover effect for button */
+    }
+
+
+
+        .d-flex {
+            display: flex;
+        }
+
+        .align-items-center {
+            align-items: center;
+        }
+
+        .flex-grow-1 {
+            flex-grow: 1;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mb-3 {
+            margin-bottom: 1rem;
+        }
+
+        .m-0 {
+            margin: 0;
+        }
+    .inline {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-input {
+            padding: 8px 12px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            outline: none;
+            transition: border-color 0.3s ease-in-out;
+        }
+
+        .search-input:focus {
+            border-color: #007bff;
+        }
+
+        .dropdown_dc {
+            padding: 8px 12px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: white;
+            cursor: pointer;
+            outline: none;
+            transition: border-color 0.3s ease-in-out;
+        }
+
+        .dropdown:focus {
+            border-color: #007bff;
+        }
+
+        .btn {
+            padding: 8px 15px;
+            font-size: 14px;
+            font-weight: bold;
+            background-color: #DC4C64;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        .btn:hover {
+            background-color: #b03a50;
+        }
+        /* Table Styling */
+        #table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 16px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        #table th {
+            background-color: #dc3545;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            color: #f8f9fa;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        #table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        #table  tr:nth-child(odd) {
+            background-color: #ffffff;
+        }
+        #table tr:hover {
+            background-color: #e9ecef;
+        }
+        #table tfoot th {
+            color: #ffffff;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        #table2 {
+            width: 100%;
+            max-width: 1200px; /* Add a max width for better control */
+            margin: 20px auto; /* Center the table */
+            table-layout: fixed; /* Fix the column widths */
+            border-collapse: collapse;
+            font-size: 14px; /* Smaller, clean font size */
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #table2 th,
+        #table2 td {
+            padding: 12px 15px; /* Add padding for better readability */
+            text-align: center;
+            word-wrap: break-word; /* Allow wrapping in cells */
+        }
+
+        #table2 th {
+            background-color: #dc3545;
+            color: #f8f9fa;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        #table2 tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        #table2 tr:nth-child(odd) {
+            background-color: #ffffff;
+        }
+
+        #table2 tr:hover {
+            background-color: #e9ecef;
+        }
+
+        #table2 tfoot th {
+            background-color: #dc3545;
+            color: #ffffff;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        /* Modal Image Styling */
+        .modal-body img {
+            display: block;
+            max-width: 100%;
+            max-height: 100%;
+            margin: 0 auto;
+            border-radius: 8px;
+        }
+
+
+        /* Animation */
+        .animate-page {
+            animation: fadeIn 1s ease-in;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .failed {
+            color: red;
+            font-weight: bold;
+        }
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+    </style>
+
+</style>
+
+
+</head>
+
+<body onload="myFunction()" style="margin:0;">
+<div id="loader"></div> <!--To remove loader animation remove this div-->
+<main>
+    <div id="navbar">
+        {% include "navbar.html" %}
+    </div>
+
+    <div class="animate-page" id="myDiv" style="display:none;">
+        <!--To remove page bottom to top animation remove this div-->
+
+        <div class="container py-4" id="searchContainerWrapper">
+            <!-- Wallet input form -->
+            <div>
+                <h4 align="center">{{ title }}</h4>
+                {% include "django_messages.html" %}
+                <form action="{% url 'service_enquiry' %}" method="post">
+                    {% csrf_token %}
+                    <div class="inline">
+                        <input id="txn_num" class="search-input" name="txn_num" align="left" placeholder="" maxlength="15" required>
+
+
+                        <select name="transaction_type" class="dropdown_dc">
+                            <option value="visa">Visa</option>
+                            <option value="nagad">Nagad Out</option>
+                            <option value="rocket">Rocket Out</option>
+                            <option value="npsb">NPSB</option>
+                            <option value="recharge">Recharge</option>
+                        </select>
+
+                        <input type="submit" class="btn btn-sm" value="SEARCH" name="search">
+                    </div>
+                </form>
+                {% include "django_messages.html" %}
+            </div>
+                <br>
+                    {% if table_data %}
+                        <h2>API Response:</h2>
+
+                        <table id="table">
+                            <thead>
+                                <tr>
+                                    <th>Key</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for key, value in table_data %}
+                                    <tr>
+                                        <td>{{ key }}</td>
+                                        <td>{{ value }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% endif %}
+
+            {% if txn_table_data %}
+                        <h2>Transaction Response Data:</h2>
+
+                        <table id="table2">
+                            <thead>
+                                <tr>
+                                    <th>Key</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for key2, value2 in txn_table_data %}
+                                    <tr>
+                                        <td>{{ key2 }}</td>
+                                        <td>{{ value2 }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+<!--                        <p class="{% if status == 'Failed' %}failed{% else %}success{% endif %}">-->
+<!--                            Result: {{status }}-->
+<!--                        </p>-->
+<!--                        <p class="{% if status == 'Failed' %}failed{% else %}success{% endif %}">-->
+<!--                            Action: {{action }}-->
+<!--                        </p>-->
+                    {% endif %}
+            <br>
+                        </div>
+    </div>
+</main>
+
+<!--Include loader script-->
+<script src="{% static 'js/loader.js' %}" type="text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+
+
+
+
+</body>
+</html>
+

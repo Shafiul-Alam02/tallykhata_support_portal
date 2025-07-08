@@ -1,0 +1,554 @@
+/*customize the scrollbar of the page*/
+::-webkit-scrollbar{
+ width: 5px;
+ height: 10px;
+ }
+
+::-webkit-scrollbar-track{
+box-shadow: inset 0 0 5px grey;
+border-radius: 10px;
+ }
+
+::-webkit-scrollbar-thumb {
+background: black;
+border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+background: #ff0000;
+}
+/*scrollbar customization end*/
+
+table {
+    width: 100%;
+    table-layout: auto; /* Ensure table layout is based on content */
+    border-collapse: collapse;
+}
+
+/*Table styling goes here*/
+thead th{
+background-color: #3F3F3F;
+color: #ffffff;
+}
+
+thead th:first-child{
+  border-radius:10px 0px 0px 0;
+}
+
+thead th:last-child{
+  border-radius:0 10px 0px 0;
+}
+
+/*tfoot th:first-child{
+  border-radius:10px 0px 0px 0;
+}
+
+tfoot th:last-child{
+  border-radius:0 10px 0px 0;
+}*/
+
+tfoot input {
+    width: 100%; /* Make input fields take the full width of the footer cell */
+    box-sizing: border-box; /* Ensure padding is included in width */
+}
+
+td{
+    text-align: left;
+}
+
+pre {
+    white-space: pre-wrap;       /* Since CSS 2.1 */
+    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+    white-space: -pre-wrap;      /* Opera 4-6 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    word-wrap: break-word;       /* Internet Explorer 5.5+ */
+}
+
+
+/* Center the loader */
+#loader {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 1;
+  width: 120px;
+  height: 120px;
+  margin: -76px 0 0 -76px;
+  border: 16px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 16px solid red;
+  border-right: 16px solid white;
+  border-bottom: 16px solid red;
+  border-left: 16px solid white;
+  -webkit-animation: spin 2s linear infinite;
+  animation: spin 2s linear infinite;
+}
+
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Add animation to "page content" */
+.animate-page {
+  position: relative;
+  -webkit-animation-name: animatebottom;
+  -webkit-animation-duration: 1s;
+  animation-name: animatebottom;
+  animation-duration: 1s
+}
+
+@-webkit-keyframes animatebottom {
+  from { bottom:-100px; opacity:0 }
+  to { bottom:0px; opacity:1 }
+}
+
+@keyframes animatebottom {
+  from{ bottom:-100px; opacity:0 }
+  to{ bottom:0; opacity:1 }
+}
+
+#myDiv {
+  display: none;
+  text-align: center;
+}
+
+
+/*customize links for animation effects*/
+.link{
+  text-decoration: none;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-position: 0% 100%;
+  background-repeat: no-repeat;
+  background-size: 0% 1px;
+  transition: background-size cubic-bezier(0,.5,0,1) 0.3s;
+}
+
+.link:hover,
+a:focus {
+  text-decoration: none;
+  background-size: 100% 1px;
+}
+
+/*Card Designs*/
+.card {
+transition: transform 0.2s ease;
+box-shadow: 0 9px 9px 0 rgba(22, 22, 26, 0.18);
+border-radius: 0;
+border: 0;
+margin-bottom: 2.0em;
+text-align:left;
+}
+
+
+/* Style the tab */
+.tab {
+  overflow: hidden;
+  border: 1px solid #ccc;
+  background-color: #f1f1f1;
+}
+
+/* Style the buttons inside the tab */
+.tab button {
+  background-color: inherit;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+  font-size: 17px;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+  background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+  background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+  display: none;
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-top: none;
+}
+
+
+.code-block-container {
+  position: relative;
+}
+
+.code-block {
+  background-color: #f7f7f7;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  position: relative;
+}
+
+/* Adjust the padding, font size, and border radius to match Google's search input */
+.search-input {
+  padding: 10px 16px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 25px;
+  width: 300px; /* Adjust the width as needed */
+  transition: box-shadow 0.3s ease-in-out; /* Optional - Add a smooth transition effect */
+}
+
+/* Add focus styles to make the input visually active when selected */
+.search-input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/*Stylize and adjust search input*/
+.table-search-input {
+    /*width: 100px; /* Adjust the width as needed
+    padding: 5px; /* Adjust the padding as needed */
+    /* Add any other styling as needed */
+}
+
+/*NavBar*/
+
+.navbar {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+    color: #000000; /* Set the default text color to black */
+    background-color: #02b0b0 !important; /* Set the navbar background color */
+}
+
+.navbar-brand {
+    display: flex;
+    align-items: center; /* Aligns items vertically in the center */
+    color: #000000; /* Set the brand text color to black */
+}
+
+.navbar-brand img {
+    transition: transform 0.3s ease-in-out, filter 0.3s ease-in-out; /* Smoother transition */
+    filter: brightness(110%); /* Initial effect to slightly brighten the image */
+}
+
+.nav-item .nav-link {
+    font-weight: bold;
+    color: #000000 !important; /* Set the nav-link text color to black */
+    font-size: 1.7rem; /* Larger font size */
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+    text-shadow: #018a8a; /* Adds a shadow effect */
+    margin-top: 1rem;
+}
+
+.navbar-nav .nav-item .nav-link:hover {
+    color: #018a8a !important; /* Hover color is teal */
+    text-shadow:#018a8a; /* Enhance shadow on hover */
+}
+
+.navbar-toggler {
+    border: none;
+}
+
+.navbar-toggler-icon {
+    border-radius: 5px;
+}
+
+.nav-item .btn-outline-light {
+    border: 1px solid #fff;
+    transition: background-color #018a8a;
+    font-size: 1.2rem; /* Increased font size for the button */
+    color: #000000; /* Set the button text color to black */
+}
+
+.nav-item .btn-outline-light:hover {
+    color: #018a8a /* Hover text color is red */
+}
+
+.table tr:nth-child(odd) {
+    background-color: #ffffff;
+}
+
+.table tr:hover {
+    background-color: #e9ecef;
+}
+/* Align logout button to the right */
+.navbar-nav .logout-item {
+    position: absolute;
+    right: 50px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: ##018a8a; /* Set the logout button text color to black */
+}
+
+/* Override the container class to make the navbar full width */
+.full-width-container {
+    width: 100%;
+    max-width: 100%;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+
+/* Header Styling */
+h1 {
+    font-size: 2em;
+    margin-bottom: 20px;
+    font-weight: bold;
+    font-family: 'Helvetica', Helvetica, Arial, sans-serif;
+}
+h2 {
+    font-size: 2em;
+    margin-bottom: 20px;
+    font-weight: bold;
+    font-family: 'Helvetica', Helvetica, Arial, sans-serif;
+}
+
+/* Table Styling */
+#table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 12px;
+    background-color: #02b0b0;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+#table th {
+    background-color: #02b0b0;
+    color: #fff;
+    font-weight: bold;
+    text-transform: uppercase;
+    padding: 10px;
+}
+
+#table td {
+    padding: 10px;
+}
+
+#table tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+#table tr:nth-child(odd) {
+    background-color: #ffffff;
+}
+
+#table tr:hover {
+    background-color: #e9ecef;
+}
+
+
+/* Modal Image Styling */
+.modal-body img {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    margin: 0 auto;
+    border-radius: 8px;
+}
+
+/* Animation */
+.animate-page {
+    animation: fadeIn 1s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+
+
+
+
+/* Table Styling */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 12px;
+    background-color: #02b0b0;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.table th {
+    background-color: #02b0b0;
+    color: #fff;
+    font-weight: bold;
+    text-transform: uppercase;
+    padding: 10px;
+}
+
+.table td {
+    padding: 10px;
+}
+
+.table tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+  #navbar {
+            width: 100%;
+            background-color: #f8f9fa; /* Adjust the background color as needed */
+        }
+
+        #searchContainerWrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20vh; /* Adjust this value to control the vertical positioning */
+        }
+
+        #searchContainer {
+            text-align: center;
+        }
+
+        /* Override the container class to make the navbar full width */
+        .full-width-container {
+            width: 100%;
+            max-width: 100%;
+            padding-right: 15px;
+            padding-left: 15px;
+            margin-right: auto;
+            margin-left: auto;
+        }
+
+        /* Additional styles to ensure full-width navbar */
+        .navbar-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 1200px; /* Adjust this value as needed to control the max width of navbar content */
+            margin: 0 auto;
+        }
+
+
+            /* Table Styling */
+    #table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        font-size: 11px;
+        background-color: #ffffff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    #table th {
+        background-color: #02b0b0;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        color: #f8f9fa;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    #table tr:nth-child(even) {
+        background-color: #f8f9fa;
+    }
+
+    #table tr:nth-child(odd) {
+        background-color: #ffffff;
+    }
+
+    #table tr:hover {
+        background-color: #e9ecef;
+    }
+
+
+
+
+    #table tfoot th {
+        color: #ffffff;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+         /* Modal Image Styling */
+        .modal-body img {
+            display: block;
+            max-width: 100%;
+            max-height: 100%;
+            margin: 0 auto;
+            border-radius: 8px;
+        }
+
+                /* Animation */
+        .animate-page {
+            animation: fadeIn 1s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        <!-- CSS Styling -->
+<style>
+    /* Form Styling */
+    #filterForm .form-row {
+        margin: 0 -5px;
+    }
+
+    #filterForm .form-group {
+        padding: 0 5px;
+        margin-bottom: 15px;
+    }
+
+    /* Labels */
+    .form-label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    /* Datepicker and Input Fields */
+    .form-control.datepicker {
+        padding: 8px 10px;
+        font-size: 14px;
+    }
+
+    /* Select Field */
+    .form-control {
+        font-size: 14px;
+    }
+
+    /* Button Styling */
+    #filterForm .btn-primary {
+        font-size: 14px;
+        padding: 10px;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+    }
+
+    #filterForm .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    /* Layout */
+    @media (max-width: 768px) {
+        #filterForm .form-group {
+            margin-bottom: 10px;
+            flex: 1 1 100%;
+        }
+    }

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% load static %}
+    {% include "include_head.html" %}
+    <title>Admin Panel</title>
+
+</head>
+
+<body onload="myFunction()" style="margin:0;">
+<div id="loader"></div> <!--To remove loader animation remove this div-->
+<main>
+    {% include "navbar.html" %}
+
+    <div class="animate-page" id="myDiv" style="display:none;"> <!--To remove page bottom to top animation remove this div-->
+
+        <div class="container py-4">
+        <h2 align="center">{{title}}</h2>
+        {% include "django_messages.html" %}
+        <br><br>
+        <!--Date Range input form goes here-->
+        <form action="{% url 'user_registration' %}" method="post">
+            {% csrf_token %}
+            <div class="wrapper">
+                <span class="inline">
+                    <p> <input type="submit" class="btn btn-primary" value="Create User" name="mybtn"></p>
+                </span>
+            </div>
+        </form>
+        <div style="overflow-x:auto;">
+            <table id="table" class="display">
+                <thead>
+                <tr>
+                    <th>User Name</th>
+                    <th>Department</th>
+                    <th>Email</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Admin Access</th>
+                    <th>TP TXN SEARCH ACCESS</th>
+                    <th>TK OTP MNP ACCESS</th>
+                    <th>WALLET MDR AND LIMIT</th>
+                    <th>TK DATA MISSING</th>
+                    <th>SERVICE HEALTH CHECK</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for pl in queryset %}
+                <tr>
+                    <td data-title="mobile">{{pl.user}}</td>
+                    <td data-title="department">{{pl.department}}</td>
+                    <td data-title="order_id">{{pl.email}}</td>
+                    <td data-title="order_date">{{pl.first_name}}</td>
+                    <td data-title="amount">{{pl.last_name}}</td>
+                    <td data-title="tallykhata_user_id">{{pl.admin_access}}</td>
+                    <td data-title="tallykhata_user_id">{{pl.tallypay_transaction_status_check}}</td>
+                    <td data-title="tallykhata_user_id">{{pl.tk_otp_mnp_access}}</td>
+                    <td data-title="tallykhata_user_id">{{pl.wallet_mdr_limit_access}}</td>
+                    <td data-title="tallykhata_user_id">{{pl.tk_data_missing}}</td>
+                    <td data-title="tallykhata_user_id">{{pl.service_health_check}}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+
+                <tfoot>
+                <tr>
+                    <th>User Name</th>
+                    <th>Department</th>
+                    <th>Email</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Admin Access</th>
+                    <th>TP TXN SEARCH ACCESS</th>
+                    <th>TK OTP MNP ACCESS</th>
+                    <th>WALLET MDR AND LIMIT</th>
+                    <th>TK DATA MISSING</th>
+                    <th>SERVICE HEALTH CHECK</th>
+                </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        </div>
+
+    </div>
+
+</main>
+
+<!--Include loader script-->
+<script src="{% static 'js/loader.js' %}" type="text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+
+
+</body>
+</html>

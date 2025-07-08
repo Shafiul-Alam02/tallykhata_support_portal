@@ -1,0 +1,2 @@
+To run locally type python manage.py runserver your_ip_address:your_port
+To run locally type python manage.py runserver 10.10.9.65:8000

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% load static %}
+    {% include "include_head.html" %}
+    {% load crispy_forms_tags %}
+    {% load crispy_forms_filters %}
+    {% load humanize %}
+    <title>TALLYPAY_ACTIVITY_LOG</title>
+
+    <style>
+        #navbar {
+            width: 100%;
+            background-color: #f8f9fa; /* Adjust the background color as needed */
+        }
+
+        #searchContainerWrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20vh; /* Adjust this value to control the vertical positioning */
+        }
+
+        #searchContainer {
+            text-align: center;
+        }
+
+        /* Override the container class to make the navbar full width */
+        .full-width-container {
+            width: 100%;
+            max-width: 100%;
+            padding-right: 15px;
+            padding-left: 15px;
+            margin-right: auto;
+            margin-left: auto;
+        }
+
+        /* Additional styles to ensure full-width navbar */
+        .navbar-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 1200px; /* Adjust this value as needed to control the max width of navbar content */
+            margin: 0 auto;
+        }
+
+
+        #table th, #table td {
+        padding: 8px;
+        border-spacing: 0;
+        }
+
+        /* Add this CSS for fitting the profile photo within the modal */
+        .modal-body img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+    </style>
+
+</head>
+
+<body onload="myFunction()" style="margin:0;">
+<div id="loader"></div> <!--To remove loader animation remove this div-->
+<main>
+    <div id="navbar">
+        {% include "navbar.html" %}
+    </div>
+
+    <div class="animate-page" id="myDiv" style="display:none;">
+        <!--To remove page bottom to top animation remove this div-->
+
+        <!--div class="container py-4" id="searchContainerWrapper" style="margin: auto; width: fit-content; "-->
+            <div class="container" id="searchContainer">
+                <h1 align="center">{{title}}</h1>
+                {% include "django_messages.html" %}
+                <br>
+                <!--Wallet input goes here-->
+                <form action="{% url 'get_check_tallypay_activity_log' %}" method="post">
+                    {% csrf_token %}
+                    {{form | crispy}}
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+
+            </div>
+
+            <!--div style="overflow-x:auto;"-->
+            <div class="container py-4" id="searchContainerWrapper2" style="overflow-x: hidden; margin: auto; width: fit-content; ">
+                <div id="tableAndPre" {% if show_table_and_pre %}style="display:block;" {% else %}style="display:none;" {% endif %}>
+                    <div class="col-lg-12" style="overflow-x: auto;">
+                        <h4>Activity Log</h4>
+                        {{html_table |safe}}
+                    </div>
+                </div>
+                <br>
+            </div>
+
+        <!-- Day Analysis Modal -->
+        <div class="modal fade" id="dayModal" tabindex="-1" aria-labelledby="dayModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="dayModalLabel">Current Day Analysis</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="chart-container">
+                            <!-- Placeholder for the chart -->
+                            <p>Bar Chart Representation</p>
+                            {{ daily_bar_chart_image|safe }}
+
+                            <p>Status wise representation</p>
+                            {{ daily_status_pie_image|safe }}
+
+                            <p>Description wise representation</p>
+                            {{ daily_description_pie_image|safe }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Month Analysis Modal -->
+        <div class="modal fade" id="monthModal" tabindex="-1" aria-labelledby="monthModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="monthModalLabel">Current Month Analysis</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Image will be displayed here -->
+                        <p>Bar Chart Representation</p>
+                            {{ monthly_bar_chart_image|safe }}
+
+                            <p>Status wise representation</p>
+                            {{ monthly_status_pie_image|safe }}
+
+                            <p>Description wise representation</p>
+                            {{ monthly_description_pie_image|safe }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</main>
+
+
+
+<!--Include loader script-->
+<script src="{% static 'js/loader.js' %}" type="text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+
+<script>
+    // Function to open the Day Analysis modal and set the chart image
+    function openDayModal() {
+        var dayModal = new bootstrap.Modal(document.getElementById('dayModal'));
+
+        // Show the modal
+        dayModal.show();
+    }
+
+    // Function to open the Month Analysis modal and set the chart image
+    function openMonthModal() {
+        var monthModal = new bootstrap.Modal(document.getElementById('monthModal'));
+
+        // Show the modal
+        monthModal.show();
+    }
+
+    // Ensure the modals are shown before setting the chart images
+    $('#dayModal').on('shown.bs.modal', function () {
+        var dayChartImage = document.getElementById('dayChartImage');
+        // Set the chart image source here
+        dayChartImage.src = '{{ daily_bar_chart_image }}';
+    });
+
+    $('#monthModal').on('shown.bs.modal', function () {
+        var monthChartImage = document.getElementById('monthChartImage');
+        // Set the chart image source here
+        monthChartImage.src = '{{ monthly_bar_chart_image }}';
+    });
+</script>
+
+
+
+</body>
+</html>
+
