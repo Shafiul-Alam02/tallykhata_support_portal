@@ -1169,11 +1169,11 @@ def get_profile_data(wallet):
             p.wallet_no,
             date_of_birth,
             full_name,
-            concat('https://npmediaapi.nobopay.com/static-doc/',profile_image),
+            concat('',profile_image),
             biz_name,
             identity_status,
             bank_account_status,
-            concat('https://npmediaapi.nobopay.com/static-doc/',biz_qr_code) ,
+            concat('',biz_qr_code) ,
             d.doc_type, 
             d.status ,
             d.is_active 
@@ -1190,7 +1190,7 @@ def get_profile_data(wallet):
     query2 = f'''
         select
             df."type",
-            concat('https://npmediaapi.nobopay.com/static-doc/',df.img_path) as image,
+            concat('',df.img_path) as image,
             df.active,
             d.doc_type ,
             d.status,
@@ -2045,7 +2045,7 @@ def sqr_data_download_query(wallet):
            ,merchant_id
            ,full_name 
            ,biz_name
-           ,concat('https://nportal.nobopay.com/#/accounts/profile/',user_id,'/',wallet_no,'/details') as BIZ_QR
+           ,concat('',user_id,'/',wallet_no,'/details') as BIZ_QR
         from profile p 
             where 1=1
             and wallet_no in ({wallet});

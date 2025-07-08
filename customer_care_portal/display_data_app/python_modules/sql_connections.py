@@ -187,7 +187,7 @@ def run_pgsql_server(query, db_name):
         user = ""
         password = ""
     elif db_name == "nobopay_api":
-        host = ""  # "10.10.66.2" "10.82.82.10"
+        host = ""
         database = db_name
         user = ""
         password = ""
